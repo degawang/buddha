@@ -23,4 +23,15 @@ namespace module {
         NonCopyable() {};
         virtual ~NonCopyable() {};
     };
+
+    template<class _type>
+    class NonInheritable {
+        friend class _type;
+        NonInheritable() {};
+    };
+    class OldNonInherit : public NonInheritable<OldNonInherit> {
+    };
+    class NewNonInherit final{
+    };
+
 }
