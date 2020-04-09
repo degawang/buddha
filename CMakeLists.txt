@@ -9,15 +9,15 @@ add_subdirectory(module)
 add_subdirectory(pattern)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(TARGET module_ai_pointer PROPERTY FOLDER "module")
+#set_property(TARGET module_ai_pointer PROPERTY FOLDER "module")
 set_property(TARGET module_time_clock PROPERTY FOLDER "module")
-set_property(TARGET module_new_feature PROPERTY FOLDER "module")
-set_property(TARGET module_class_utils PROPERTY FOLDER "module")
-set_property(TARGET module_memory_pool PROPERTY FOLDER "module")
-set_property(TARGET module_refer_count PROPERTY FOLDER "module")
+#set_property(TARGET module_new_feature PROPERTY FOLDER "module")
+#set_property(TARGET module_class_utils PROPERTY FOLDER "module")
+#set_property(TARGET module_memory_pool PROPERTY FOLDER "module")
+#set_property(TARGET module_refer_count PROPERTY FOLDER "module")
 set_property(TARGET module_thread_pool PROPERTY FOLDER "module")
-set_property(TARGET pattern_factory_pattern PROPERTY FOLDER "pattern")
-set_property(TARGET pattern_iterator_pattern PROPERTY FOLDER "pattern")
+#set_property(TARGET pattern_factory_pattern PROPERTY FOLDER "pattern")
+#set_property(TARGET pattern_iterator_pattern PROPERTY FOLDER "pattern")
 set_property(TARGET pattern_singleton_pattern PROPERTY FOLDER "pattern")
 
 set(CMAKE_CXX_FLAGS
@@ -43,13 +43,13 @@ target_compile_options(${PROJECT_NAME}
 					   -g)
 
 target_link_libraries(${PROJECT_NAME}
-					  module_ai_pointer
+					  #module_ai_pointer
 					  module_time_clock
-					  module_class_utils
-					  module_memory_pool
-					  module_refer_count
+					  #module_class_utils
+					  #module_memory_pool
+					  #module_refer_count
 					  module_thread_pool
-					  pattern_factory_pattern
+					  #pattern_factory_pattern
 					  pattern_singleton_pattern)
 
 target_include_directories(${PROJECT_NAME}

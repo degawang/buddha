@@ -1,4 +1,2 @@
 
-add_subdirectory(pattern_factory_pattern)
-add_subdirectory(pattern_iterator_pattern)
 add_subdirectory(pattern_singleton_pattern)
