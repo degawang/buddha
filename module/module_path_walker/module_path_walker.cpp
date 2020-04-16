@@ -2,6 +2,10 @@
 #include "module_path_walker.h"
 
 std::vector<std::string> module::PathWalker::recursive_walk(const std::string directory, const std::string parameter) {
+	auto res = assert_path(directory);
+	if (base::return_code::ok != res) {
+		return std::vector<std::string>();
+	}
 	if (directory != __directory) {
 		__directory = directory;
 		__parameter = parameter;
@@ -10,6 +14,10 @@ std::vector<std::string> module::PathWalker::recursive_walk(const std::string di
 	return std::vector<std::string>(__file_list);
 }
 std::vector<std::string> module::PathWalker::non_recursive_walk(const std::string directory, const std::string parameter) {
+	auto res = assert_path(directory);
+	if (base::return_code::ok != res) {
+		return std::vector<std::string>();
+	}
 	if (directory != __directory) {
 		__directory = directory;
 		__parameter = parameter;
@@ -39,6 +47,15 @@ void module::PathWalker::__non_recursive_get_file_list() {
 				__file_list.push_back(file_name);
 			}
 		}
+	}
+}
+
+base::return_code module::PathWalker::assert_path(std::string path) {
+	if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+		return base::return_code::ok;
+	}
+	else {
+		return base::return_code::path_not_exsit;
 	}
 }
 

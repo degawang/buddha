@@ -3,6 +3,7 @@
 #include <thread>
 #include <iostream>
 
+#include "base/base.h"
 #include "algorithm_base.h"
 #include "module_reflection.h"
 #include "module_path_walker.h"

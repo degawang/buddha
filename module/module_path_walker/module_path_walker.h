@@ -14,6 +14,7 @@
 #include <functional>
 #include <condition_variable>
 
+#include "../../base/base.h"
 #include "pattern_singleton_pattern.h"
 
 namespace module{
@@ -35,6 +36,8 @@ namespace module{
 	private:
 		void __recursive_get_file_list();
 		void __non_recursive_get_file_list();
+	private:
+		base::return_code assert_path(std::string);
 	private:
 		std::string __directory;
 		std::string __parameter;
