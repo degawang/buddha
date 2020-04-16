@@ -1,0 +1,11 @@
+
+MACRO(DIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dir_list "")
+  FOREACH(child ${children})
+    IF(IS_DIRECTORY ${curdir}/${child})
+      LIST(APPEND dir_list ${child})
+    ENDIF()
+  ENDFOREACH()
+  SET(${result} ${dir_list})
+ENDMACRO()

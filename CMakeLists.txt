@@ -7,9 +7,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(module)
 add_subdirectory(pattern)
+add_subdirectory(algorithm)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-#set_property(TARGET module_ai_pointer PROPERTY FOLDER "module")
+set_property(TARGET module_reflection PROPERTY FOLDER "module")
+set_property(TARGET module_path_walker PROPERTY FOLDER "module")
 set_property(TARGET module_time_clock PROPERTY FOLDER "module")
 #set_property(TARGET module_new_feature PROPERTY FOLDER "module")
 #set_property(TARGET module_class_utils PROPERTY FOLDER "module")
@@ -20,8 +22,10 @@ set_property(TARGET module_thread_pool PROPERTY FOLDER "module")
 #set_property(TARGET pattern_iterator_pattern PROPERTY FOLDER "pattern")
 set_property(TARGET pattern_singleton_pattern PROPERTY FOLDER "pattern")
 
+set_property(TARGET algorithm_base PROPERTY FOLDER "algorithm")
+
 set(CMAKE_CXX_FLAGS
-	"${CMAKE_CXX_FLAGS} -g -std=c++17")
+	"${CMAKE_CXX_FLAGS} -g -std=c++latest")
 
 file(GLOB_RECURSE
 	 MARKDOWN_NOTE
@@ -43,11 +47,13 @@ target_compile_options(${PROJECT_NAME}
 					   -g)
 
 target_link_libraries(${PROJECT_NAME}
-					  #module_ai_pointer
+					  algorithm_base
+                      module_reflection
 					  module_time_clock
 					  #module_class_utils
 					  #module_memory_pool
 					  #module_refer_count
+					  module_path_walker
 					  module_thread_pool
 					  #pattern_factory_pattern
 					  pattern_singleton_pattern)

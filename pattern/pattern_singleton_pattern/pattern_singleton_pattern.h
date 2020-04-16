@@ -14,18 +14,19 @@
 #include <functional>
 #include <condition_variable>
 
-#include <assert.h>
-
 namespace pattern{
 
 	template<typename _derived>
 	class SingletonPattern {
 	public:
 		template<typename ..._args>
-		static _derived *get_instance(_args&&... args) {
+		static std::shared_ptr<_derived> get_instance(_args&&... args) {
 			std::lock_guard<std::mutex> lock(__mutex);
 			if (nullptr == __instance) {
-				__instance = new(std::nothrow) _derived(std::forward<_args>(args)...);
+				auto ptr = new(std::nothrow) _derived(std::forward<_args>(args)...);
+				__instance = std::shared_ptr<_derived>(ptr);
+				// still i dont know why
+				//__instance = std::make_shared<_derived>(std::forward<_args>(args)...);
 			}
 			return __instance;
 		}
@@ -37,39 +38,39 @@ namespace pattern{
 		SingletonPattern(const SingletonPattern<_derived>& _anther) = delete;
 		SingletonPattern<_derived> &operator=(SingletonPattern<_derived>&& _anther) = delete;
 		SingletonPattern<_derived> &operator=(const SingletonPattern<_derived>& _anther) = delete;
-	protected:
-		class Dummy {
-		public:
-			~Dummy();
-		};
-	private:
-		static Dummy __dummy;
+	//protected:
+	//	class Dummy {
+	//	public:
+	//		~Dummy();
+	//	};
+	//private:
+	//	static Dummy __dummy;
 	private:
 		static std::mutex __mutex;
-		static _derived *__instance;
+		static std::shared_ptr<_derived> __instance;
 	};
 
 	template<typename _derived>
 	std::mutex SingletonPattern<_derived>::__mutex;
 
 	template<typename _derived>
-	_derived *SingletonPattern<_derived>::__instance = nullptr;
+	std::shared_ptr<_derived> SingletonPattern<_derived>::__instance = nullptr;
 
-	// declearation may meed typedef typename ***::*** ***
-	// is this the typename declearation ???
-	template<typename _derived>
-	typename SingletonPattern<_derived>::Dummy SingletonPattern<_derived>::__dummy;
+	//// declearation may meed typedef typename ***::*** ***
+	//// is this the typename declearation ???
+	//template<typename _derived>
+	//typename SingletonPattern<_derived>::Dummy SingletonPattern<_derived>::__dummy;
 
-	template<typename _derived>
-	inline SingletonPattern<_derived>::Dummy::~Dummy() {
-		// why i have a _derived entity, but i still cannot enter this interface
-		// even i cannot enter the deconstruction function of the _derived entity
-		// when i give back the memory to system, can not it call memory leak ???
-		if (nullptr != SingletonPattern<_derived>::__instance) {
-			delete SingletonPattern<_derived>::__instance;
-			SingletonPattern<_derived>::__instance = nullptr;
-		}
-	}
+	//template<typename _derived>
+	//inline SingletonPattern<_derived>::Dummy::~Dummy() {
+	//	// why i have a _derived entity, but i still cannot enter this interface
+	//	// even i cannot enter the deconstruction function of the _derived entity
+	//	// when i give back the memory to system, can not it call memory leak ???
+	//	if (nullptr != SingletonPattern<_derived>::__instance) {
+	//		delete SingletonPattern<_derived>::__instance;
+	//		SingletonPattern<_derived>::__instance = nullptr;
+	//	}
+	//}
 
 	template<typename _derived>
 	class Singleton {

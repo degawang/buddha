@@ -13,8 +13,6 @@
 #include <functional>
 #include <condition_variable>
 
-#include <module_time_clock.h>
-
 namespace module {
 	class TimeClock {
 	public:
@@ -24,7 +22,7 @@ namespace module {
 		~TimeClock() = default;
 	public:
 		template<typename _object = std::chrono::microseconds>
-		long long get_clock_count() {
+		long long get_time_duration() {
 			return std::chrono::duration_cast<_object>(__toc()).count();
 		}
 	private:

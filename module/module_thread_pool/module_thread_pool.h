@@ -12,7 +12,7 @@
 #include <functional>
 #include <condition_variable>
 
-#include <pattern_singleton_pattern.h>
+#include "pattern_singleton_pattern.h"
 
 namespace module{
 
@@ -27,15 +27,16 @@ namespace module{
             for (size_t i = 0; i < __thread_num; ++i) {
 				__threads.push_back(std::thread([this] {
 					while (!__stop.load(std::memory_order_acquire)) {
-						std::unique_lock<std::mutex> lock(this->__mutex);
-						__cond.wait(lock, [this] {return !this->__tasks.empty() || __stop.load(std::memory_order_acquire); });
-						if (this->__stop.load(std::memory_order_acquire))
-                            return;
-						//while (!this->__tasks.empty()){
-						auto task = std::move(__tasks.front());
-						__tasks.pop();
+						std::function<void()> task;
+						{
+							std::unique_lock<std::mutex> lock(this->__mutex);
+							__cond.wait(lock, [this] {return !this->__tasks.empty() || __stop.load(std::memory_order_acquire); });
+	                        if (__stop.load(std::memory_order_acquire))
+								return;
+							task = std::move(__tasks.front());
+							__tasks.pop();
+						}
 						task();
-						//}
 					}
 				}));
 			}
@@ -46,10 +47,12 @@ namespace module{
 			typedef typename std::result_of<_func(_args...)>::type return_type;
 			auto t = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<_func>(func), std::forward<_args>(args)...));
 			auto ret = t->get_future();
-			std::unique_lock<std::mutex> lock(__mutex);
-			__tasks.emplace([t] {
-				(*t)();
-			});
+			{
+				std::unique_lock<std::mutex> lock(__mutex);
+				__tasks.emplace([t] {
+					(*t)();
+				}); 
+			}
 			__cond.notify_one();
 			return ret;
 		}
