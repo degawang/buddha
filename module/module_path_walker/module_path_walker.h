@@ -37,7 +37,7 @@ namespace module{
 		void __recursive_get_file_list();
 		void __non_recursive_get_file_list();
 	private:
-		base::return_code assert_path(std::string);
+		base::return_code __assert_path(std::string);
 	private:
 		std::string __directory;
 		std::string __parameter;

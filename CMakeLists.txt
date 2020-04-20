@@ -15,8 +15,8 @@ set_property(TARGET module_path_walker PROPERTY FOLDER "module")
 set_property(TARGET module_time_clock PROPERTY FOLDER "module")
 #set_property(TARGET module_new_feature PROPERTY FOLDER "module")
 #set_property(TARGET module_class_utils PROPERTY FOLDER "module")
-#set_property(TARGET module_memory_pool PROPERTY FOLDER "module")
 #set_property(TARGET module_refer_count PROPERTY FOLDER "module")
+set_property(TARGET module_memory_pool PROPERTY FOLDER "module")
 set_property(TARGET module_thread_pool PROPERTY FOLDER "module")
 #set_property(TARGET pattern_factory_pattern PROPERTY FOLDER "pattern")
 #set_property(TARGET pattern_iterator_pattern PROPERTY FOLDER "pattern")
@@ -51,8 +51,8 @@ target_link_libraries(${PROJECT_NAME}
                       module_reflection
 					  module_time_clock
 					  #module_class_utils
-					  #module_memory_pool
 					  #module_refer_count
+					  module_memory_pool
 					  module_path_walker
 					  module_thread_pool
 					  #pattern_factory_pattern

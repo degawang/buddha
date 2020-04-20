@@ -27,7 +27,7 @@ namespace module {
 	public:
 		base::return_code regist_factory(base::algorithm_code algorithm_code, std::shared_ptr<algorithm::BaseAlgorithm> baseAlgorithm) {
 			__map[algorithm_code] = baseAlgorithm;
-			return base::return_code::ok;
+			return base::return_code::success;
 		}
 		std::shared_ptr<algorithm::BaseAlgorithm> get_algorithm(base::algorithm_code algorithm_code) {
 			auto it = __map.find(algorithm_code);
