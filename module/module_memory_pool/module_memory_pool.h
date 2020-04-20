@@ -107,10 +107,10 @@ namespace module {
 			typedef MemoryPool<_anther_type> other; 
 		};
 	public:
-		template <typename _anther_type, typename... _args>
-		_anther_type* new_object(_args &&... args) {
+		template <typename... _args>
+		_type* new_object(_args &&... args) {
 			auto allocate_pointer = __allocate();
-			new(allocate_pointer) _anther_type(std::forward<_args>(args)...);
+			new(allocate_pointer) _type(std::forward<_args>(args)...);
 			return allocate_pointer;
 		}
 		void delete_object(_type *pointer) {
