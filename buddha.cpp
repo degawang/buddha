@@ -24,8 +24,8 @@ public:
 int main() {
 	//memory pool
 	auto mp_int = module::MemoryPool<int>::get_instance();
-	auto ap = mp_int->new_element();
-	mp_int->delete_element(ap);
+	auto ap = mp_int->new_object<float>();
+	mp_int->delete_object(reinterpret_cast<int*>(ap));
 	// path walker
 	//auto path_walker(module::PathWalker::get_instance());
 	//auto file_list(path_walker->non_recursive_walk(""));
