@@ -23,9 +23,9 @@ public:
 
 int main() {
 	//memory pool
-	auto mp_int = module::MemoryPool<int>::get_instance();
-	auto ap = mp_int->new_object();
-	mp_int->delete_object(ap);
+	//auto mp_int = module::MemoryPool<int>::get_instance();
+	//auto ap = mp_int->new_object();
+	//mp_int->delete_object(ap);
 	// path walker
 	//auto path_walker(module::PathWalker::get_instance());
 	//auto file_list(path_walker->non_recursive_walk(""));
@@ -33,10 +33,10 @@ int main() {
 	//	std::cout << ref.c_str() << std::endl;
 	//}
 	// reflection
-	//auto rf(module::Reflection::get_instance());
-	//rf->regist_factory(base::algorithm_code::base_algorithm, DrivedAlgorithm::get_instance());
-	//auto alg = rf->get_algorithm(base::algorithm_code::base_algorithm);
-	//alg->hello();
+	auto rf(module::Reflection<algorithm::BaseAlgorithm, base::algorithm_code>::get_instance());
+	rf->regist_factory(base::algorithm_code::base_algorithm, DrivedAlgorithm::get_instance());
+	auto alg = rf->get_algorithm(base::algorithm_code::base_algorithm);
+	alg->hello();
 	// thread pool
 	//std::vector<std::future<void>> v;
 	//auto tp(module::ThreadPool::get_instance(8));

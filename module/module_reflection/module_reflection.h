@@ -19,17 +19,18 @@
 #include "pattern_singleton_pattern.h"
 
 namespace module {
-	class Reflection : public pattern::SingletonPattern<Reflection> {
+	template<typename _algorithm_type = algorithm::BaseAlgorithm, typename _algorithm_code = base::algorithm_code>
+	class Reflection : public pattern::SingletonPattern<Reflection<_algorithm_type, _algorithm_code>> {
 	private:
 		Reflection() = default;
 	public:
 		~Reflection() = default;
 	public:
-		base::return_code regist_factory(base::algorithm_code algorithm_code, std::shared_ptr<algorithm::BaseAlgorithm> baseAlgorithm) {
+		base::return_code regist_factory(_algorithm_code algorithm_code, std::shared_ptr<_algorithm_type> baseAlgorithm) {
 			__map[algorithm_code] = baseAlgorithm;
 			return base::return_code::success;
 		}
-		std::shared_ptr<algorithm::BaseAlgorithm> get_algorithm(base::algorithm_code algorithm_code) {
+		std::shared_ptr<_algorithm_type> get_algorithm(_algorithm_code algorithm_code) {
 			auto it = __map.find(algorithm_code);
 			if (__map.end() == it) { 
 				return nullptr; 
@@ -39,7 +40,7 @@ namespace module {
 			}
 		}
 	private:
-		std::map<base::algorithm_code, std::shared_ptr<algorithm::BaseAlgorithm>> __map;
+		std::map<_algorithm_code, std::shared_ptr<_algorithm_type>> __map;
 	private:
 		friend pattern::SingletonPattern<Reflection>;
 	};
