@@ -12,17 +12,17 @@
 #include <functional>
 #include <condition_variable>
 
+#include "../../base/base.h"
 #include "pattern_singleton_pattern.h"
 
 namespace module{
-
 	class ThreadPool : public pattern::SingletonPattern<ThreadPool> {
 	public:
 		~ThreadPool() {
 			__stop_task();
 		}
     private:
-        explicit ThreadPool(int thread_num) : __stop(false) {
+        ThreadPool(int thread_num = 8) : __stop(false) {
 			__thread_num = (thread_num > 0 ? thread_num : std::thread::hardware_concurrency());
             for (size_t i = 0; i < __thread_num; ++i) {
 				__threads.push_back(std::thread([this] {
@@ -42,10 +42,10 @@ namespace module{
 			}
         }
 	public:
-        template <typename _func, typename... _args>
-		auto commit_task(_func&& func, _args&&... args) -> std::future<typename std::result_of<_func(_args...)>::type> {
-			typedef typename std::result_of<_func(_args...)>::type return_type;
-			auto t = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<_func>(func), std::forward<_args>(args)...));
+        template <typename _function, typename... _args>
+		auto commit_task(_function&& func, _args&&... args) -> std::future<typename std::result_of<_function(_args...)>::type> {
+			typedef typename std::result_of<_function(_args...)>::type return_type;
+			auto t = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<_function>(func), std::forward<_args>(args)...));
 			auto ret = t->get_future();
 			{
 				std::unique_lock<std::mutex> lock(__mutex);
@@ -76,4 +76,38 @@ namespace module{
 	private:
 		friend pattern::SingletonPattern<ThreadPool>;
     };
+	template<typename _type = size_t, typename  _functiontion>
+	base::return_code parallel_for(base::Range<_type> range, _functiontion function, size_t hint = 8) {
+		auto tp = ThreadPool::get_instance();
+		typedef typename std::result_of<_functiontion(_type, _type)>::type return_type;
+		std::vector<std::future<return_type>> thread_result;
+		auto thread_count = base::min((_type)std::thread::hardware_concurrency(), base::max((_type)(1), (_type)hint));
+		auto stride = ((range.end - range.begin) / (_type)thread_count);
+		//for (size_t i = 0; i < thread_count; ++i) {
+		//	thread_result.push_back(std::async(function, range.begin + i * stride, ((i == thread_count - (_type)1) ? range.end : range.begin + (i + 1) * stride)));
+		//}
+		for (size_t i = 0; i < thread_count; ++i) {
+			thread_result.push_back(std::move(
+				tp->commit_task(function, range.begin + i * stride, 
+					((i == thread_count - (_type)1) ? range.end : range.begin + (i + 1) * stride))));
+		}
+		for (auto &ref : thread_result) {
+			auto res = ref.get();
+		}
+		return base::return_code::success;
+	}
+	template<typename _iter_type, typename  _functiontion>
+	base::return_code parallel_for_each(_iter_type begin, _iter_type end, _functiontion function) {
+		auto tp = ThreadPool::get_instance();
+		typedef typename std::result_of<_functiontion(_iter_type)>::type return_type;
+		std::vector<std::future<return_type>> thread_result;
+		for (auto iter = begin; iter < end; ++iter) {
+			thread_result.push_back(std::move(
+				tp->commit_task(function, iter)));
+		}
+		for (auto& ref : thread_result) {
+			auto res = ref.get();
+		}
+		return base::return_code::success;
+	}
 }

@@ -21,7 +21,7 @@ namespace algorithm {
 		BaseAlgorithm() = default;
 		~BaseAlgorithm() = default;
 	public:
-		virtual void hello() {
+		virtual void hello() const {
 			std::cout << "hello BaseAlgorithm !" << std::endl;
 		}
 	};

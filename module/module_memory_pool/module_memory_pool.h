@@ -155,9 +155,11 @@ namespace module {
 				__free_slots = reinterpret_cast<slot_pointer>(pointer);
 			}
 		}
+		// how many _type object can the memory pool contain
 		size_t __max_count() const noexcept {
-			size_t max_blocks = -1 / _block_size;
-			return (_block_size - sizeof(data_pointer)) / sizeof(slot_type) * max_blocks;
+			// -1 is the max address value
+			size_t max_block_count = -1 / _block_size;
+			return (_block_size - sizeof(data_pointer)) / sizeof(slot_type) * max_block_count;
 		}
 	private:
 		void __allocate_block() {

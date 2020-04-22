@@ -1,6 +1,7 @@
 
 #include <atomic>
 #include <thread>
+#include <vector>
 #include <iostream>
 
 #include "base/base.h"
@@ -16,12 +17,28 @@
 
 class DrivedAlgorithm : public algorithm::BaseAlgorithm, public pattern::SingletonPattern<DrivedAlgorithm> {
 public:
-	virtual void hello() {
+	virtual void hello() const override {
 		std::cout << "hello DrivedAlgorithm !" << std::endl;
 	}
 };
 
 int main() {
+	//int aa = 50;
+	//module::parallel_for(base::Range{ 100,10 }, [&](int a,int b) {
+	//	if (a < 20) {
+	//		std::cout << a << std::endl;
+	//		aa = 9;
+	//		std::cout << aa << std::endl;
+	//	}
+	//	return 0;
+	//});
+	//std::cout << "outer : " << aa << std::endl;
+	//module::parallel_for_each(0,10,[&](int a) {
+	//	if (a < 20) {
+	//		std::cout << a << std::endl;
+	//	}
+	//	return 0;
+	//});
 	//memory pool
 	//auto mp_int = module::MemoryPool<int>::get_instance();
 	//auto ap = mp_int->new_object();
@@ -33,10 +50,10 @@ int main() {
 	//	std::cout << ref.c_str() << std::endl;
 	//}
 	// reflection
-	auto rf(module::Reflection<algorithm::BaseAlgorithm, base::algorithm_code>::get_instance());
-	rf->regist_factory(base::algorithm_code::base_algorithm, DrivedAlgorithm::get_instance());
-	auto alg = rf->get_algorithm(base::algorithm_code::base_algorithm);
-	alg->hello();
+	//auto rf(module::Reflection<algorithm::BaseAlgorithm, base::algorithm_code>::get_instance());
+	//rf->regist_factory(base::algorithm_code::base_algorithm, DrivedAlgorithm::get_instance());
+	//auto alg = rf->get_algorithm(base::algorithm_code::base_algorithm);
+	//alg->hello();
 	// thread pool
 	//std::vector<std::future<void>> v;
 	//auto tp(module::ThreadPool::get_instance(8));
