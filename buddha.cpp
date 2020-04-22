@@ -6,21 +6,14 @@
 
 #include "base/base.h"
 #include "algorithm_base.h"
+#include "algorithm_derived.h"
 #include "module_reflection.h"
 #include "module_path_walker.h"
 #include "module_memory_pool.h"
 #include "module_thread_pool.h"
-#include "pattern_singleton_pattern.h"
 
 // test for memory leak
 #include "vld.h"
-
-class DrivedAlgorithm : public algorithm::BaseAlgorithm, public pattern::SingletonPattern<DrivedAlgorithm> {
-public:
-	virtual void hello() const override {
-		std::cout << "hello DrivedAlgorithm !" << std::endl;
-	}
-};
 
 int main() {
 	//int aa = 50;
@@ -50,10 +43,10 @@ int main() {
 	//	std::cout << ref.c_str() << std::endl;
 	//}
 	// reflection
-	//auto rf(module::Reflection<algorithm::BaseAlgorithm, base::algorithm_code>::get_instance());
-	//rf->regist_factory(base::algorithm_code::base_algorithm, DrivedAlgorithm::get_instance());
-	//auto alg = rf->get_algorithm(base::algorithm_code::base_algorithm);
-	//alg->hello();
+	auto rf(module::Reflection<algorithm::BaseAlgorithm, base::algorithm_code>::get_instance());
+	rf->regist_factory(base::algorithm_code::derived_algorithm, algorithm::DrivedAlgorithm::get_instance());
+	auto alg = rf->get_algorithm(base::algorithm_code::derived_algorithm);
+	alg->hello();
 	// thread pool
 	//std::vector<std::future<void>> v;
 	//auto tp(module::ThreadPool::get_instance(8));

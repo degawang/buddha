@@ -25,7 +25,7 @@ namespace pattern{
 			if (nullptr == __instance) {
 				auto ptr = new(std::nothrow) _derived(std::forward<_args>(args)...);
 				__instance = std::shared_ptr<_derived>(ptr);
-				// still i dont know why
+				// still i don't know why
 				//__instance = std::make_shared<_derived>(std::forward<_args>(args)...);
 			}
 			return __instance;

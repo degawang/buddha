@@ -23,6 +23,7 @@ set_property(TARGET module_thread_pool PROPERTY FOLDER "module")
 set_property(TARGET pattern_singleton_pattern PROPERTY FOLDER "pattern")
 
 set_property(TARGET algorithm_base PROPERTY FOLDER "algorithm")
+set_property(TARGET algorithm_derived PROPERTY FOLDER "algorithm")
 
 set(CMAKE_CXX_FLAGS
 	"${CMAKE_CXX_FLAGS} -g -std=c++latest")
@@ -48,6 +49,7 @@ target_compile_options(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
 					  algorithm_base
+					  algorithm_derived
                       module_reflection
 					  module_time_clock
 					  #module_class_utils
