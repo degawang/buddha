@@ -25,19 +25,46 @@ namespace module{
 			std::vector<std::string>().swap(__file_list);
 		};
 	public:
-		std::vector<std::string> recursive_walk(
+		template<typename _iter_type = std::filesystem::directory_iterator>
+		std::vector<std::string> walk_path(
 			const std::string directory,
-			const std::string parameter = ".*\.(bmp|jpg|png)$");
-		std::vector<std::string> non_recursive_walk(
-			const std::string directory, 
-			const std::string parameter = ".*\.(bmp|jpg|png)$");
+			const std::string parameter = ".*\.(bmp|jpg|png)$") {
+			auto res = __assert_path(directory);
+			if (base::return_code::success != res) {
+				return std::vector<std::string>();
+			}
+			if (directory != __directory) {
+				__directory = directory;
+				__parameter = parameter;
+				__get_file_list<_iter_type>();
+			}
+			return std::vector<std::string>(__file_list);
+		}
 	private:
 		PathWalker() = default;
 	private:
-		void __recursive_get_file_list();
-		void __non_recursive_get_file_list();
+		template<typename _iter_type>
+		void __get_file_list() {
+			std::regex regex(__parameter);
+			std::vector<std::string>().swap(__file_list);
+			if (std::filesystem::is_directory(__directory)) {
+				for (auto ref : _iter_type(__directory)) {
+					auto file_name(ref.path().generic_string());
+					if (std::regex_match(file_name, regex)) {
+						__file_list.push_back(file_name);
+					}
+				}
+			}
+		}
 	private:
-		base::return_code __assert_path(std::string);
+		base::return_code __assert_path(std::string path) {
+			if (std::filesystem::exists(path) && std::filesystem::is_directory(path)) {
+				return base::return_code::success;
+			}
+			else {
+				return base::return_code::path_not_exsit;
+			}
+		}
 	private:
 		std::string __directory;
 		std::string __parameter;

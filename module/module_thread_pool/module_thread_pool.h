@@ -43,9 +43,9 @@ namespace module{
         }
 	public:
         template <typename _function, typename... _args>
-		auto commit_task(_function&& func, _args&&... args) -> std::future<typename std::result_of<_function(_args...)>::type> {
+		auto commit_task(_function&& function, _args&&... args) -> std::future<typename std::result_of<_function(_args...)>::type> {
 			typedef typename std::result_of<_function(_args...)>::type return_type;
-			auto t = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<_function>(func), std::forward<_args>(args)...));
+			auto t = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<_function>(function), std::forward<_args>(args)...));
 			auto ret = t->get_future();
 			{
 				std::unique_lock<std::mutex> lock(__mutex);

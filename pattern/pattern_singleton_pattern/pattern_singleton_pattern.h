@@ -25,7 +25,7 @@ namespace pattern{
 			if (nullptr == __instance) {
 				auto ptr = new(std::nothrow) _derived(std::forward<_args>(args)...);
 				__instance = std::shared_ptr<_derived>(ptr);
-				// still i don't know why
+				// still i don't know why, is there any other class needed to construct the instance
 				//__instance = std::make_shared<_derived>(std::forward<_args>(args)...);
 			}
 			return __instance;
@@ -34,17 +34,10 @@ namespace pattern{
 		SingletonPattern() = default;
 		virtual ~SingletonPattern() {}
 	protected:
-		SingletonPattern(SingletonPattern<_derived>&& _anther) = delete;
-		SingletonPattern(const SingletonPattern<_derived>& _anther) = delete;
-		SingletonPattern<_derived> &operator=(SingletonPattern<_derived>&& _anther) = delete;
-		SingletonPattern<_derived> &operator=(const SingletonPattern<_derived>& _anther) = delete;
-	//protected:
-	//	class Dummy {
-	//	public:
-	//		~Dummy();
-	//	};
-	//private:
-	//	static Dummy __dummy;
+		SingletonPattern(SingletonPattern<_derived>&& anther) = delete;
+		SingletonPattern(const SingletonPattern<_derived>& anther) = delete;
+		SingletonPattern<_derived> &operator=(SingletonPattern<_derived>&& anther) = delete;
+		SingletonPattern<_derived> &operator=(const SingletonPattern<_derived>& anther) = delete;
 	private:
 		static std::mutex __mutex;
 		static std::shared_ptr<_derived> __instance;

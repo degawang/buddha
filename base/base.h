@@ -27,8 +27,9 @@ namespace base {
 		Range(_type _end_ = 0, _type _begin_ = 0) : end(_end_), begin(_begin_) {};
 	};
 
+	// add map && reduce
 	template <typename _function, typename... _args>
-	auto invoke_multi_time(_function func, _args... args) {
+	auto invoke_multi_time(_function function, _args... args) {
 		std::initializer_list<int>{ ((function(std::forward<_args>(args))), 0)...};
 	}
 
@@ -94,5 +95,12 @@ namespace base {
 		return ((args < input) && ...);
 	};
 
-
+	class Noncopyable {
+	protected:
+		Noncopyable() = default;
+		~Noncopyable() = default;
+	private:
+		Noncopyable(const Noncopyable&) = delete;
+		const Noncopyable& operator=(const Noncopyable&) = delete;
+	};
 };
