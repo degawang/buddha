@@ -5,3 +5,4 @@
 # specific directory
 build/
 .vscode/
+workspace/

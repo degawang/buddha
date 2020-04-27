@@ -1,6 +1,7 @@
 
 add_subdirectory(module_reflection)
 add_subdirectory(module_time_clock)
+add_subdirectory(module_information)
 add_subdirectory(module_path_walker)
 add_subdirectory(module_memory_pool)
 add_subdirectory(module_thread_pool)

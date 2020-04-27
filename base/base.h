@@ -1,6 +1,11 @@
 #pragma once
 
 namespace base {
+	enum class infor_type {
+		dummy,
+		console,
+		std_file,
+	};
 	enum class return_code {
 		success,
 		out_of_memory,
@@ -67,9 +72,6 @@ namespace base {
 	_type clamp(_type&& value, _type&& minimum, _type&& maximum) {
 		return (_type)(min(max(value, minimum), maximum));
 	}
-
-	template <typename... _type>
-	void dummy(_type&&... type) {}
 
 	template <typename _type, typename... _args>
 	_type sum(_args&&... args) {
