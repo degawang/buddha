@@ -21,7 +21,7 @@ namespace module {
 		}
 		~TimeClock() = default;
 	public:
-		template<typename _object = std::chrono::milliseconds>
+		template<typename _object = std::chrono::microseconds>
 		long long time_duration() {
 			return std::chrono::duration_cast<_object>(__toc()).count();
 		}
