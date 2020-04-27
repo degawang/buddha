@@ -1,3 +1,11 @@
+/*
+ * @Author: degawong 
+ * @Date: 2020-03-23 16:41:29
+ * @LastEditTime: 2020-04-27 15:32:28
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: buddha/buddha.cpp
+ */
 
 #include <atomic>
 #include <thread>
@@ -19,10 +27,9 @@
 #include "vld.h"
 
 int main() {
+	auto res = module::Information<INFO_TYPE>("main", "_1st ", 1, " _2nd ", "2");
 	//log info
-	module::Information<> a("main", "_1st ", 1, " _2nd ", "2");
-	//std::cout << typeid(module::InforLevel<base::infor_type::console>().get_info_type()).name() << std::endl;
-	//std::cout << typeid(module::InforLevel<base::infor_type::std_file>().get_info_type()).name() << std::endl;
+	//decltype(module::InforLevel<base::infor_type::console>().get_info_type());
 	//auto mo = module::InforAdaptor(aa);
 	//mo.out_formation("asa", 1);
 	//aa.close();

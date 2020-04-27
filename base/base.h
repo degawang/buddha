@@ -1,7 +1,7 @@
 #pragma once
 
 namespace base {
-	enum class infor_type {
+	enum class info_type {
 		dummy,
 		console,
 		std_file,

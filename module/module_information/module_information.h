@@ -1,3 +1,11 @@
+/*
+ * @Author: degawong
+ * @Date: 2020-04-24 14:39:21
+ * @LastEditTime: 2020-04-27 15:29:43
+ * @LastEditors: Please set LastEditors
+ * @Description: add template partial specialization
+ * @FilePath: buddha/module/module_information/module_information.h
+ */
 #pragma once
 
 #include <map>
@@ -23,9 +31,9 @@ namespace module {
 	
 #define RECORD_NAME "algorithm.txt"
 
-#define STREAM_TYPE Dummy
-//#define STREAM_TYPE std::ostream
-//#define STREAM_TYPE std::ofstream
+#define INFO_TYPE base::info_type::dummy
+#define INFO_TYPE base::info_type::console
+#define INFO_TYPE base::info_type::std_file
 
 	struct Dummy {
 		using type = Dummy;
@@ -62,24 +70,50 @@ namespace module {
 	private:
 		friend pattern::SingletonPattern<InforWrap>;
 	};
-	template<base::infor_type _info_type>
-	struct InforLevel;
+	//template<base::info_type _info_type>
+	//struct InforLevel;
+	//template<>
+	//struct InforLevel<base::info_type::dummy> {
+	//	Dummy& get_info_type() {
+	//		return Dummy();
+	//	}
+	//};
+	//template<>
+	//struct InforLevel<base::info_type::console> {
+	//	std::ostream& get_info_type() {
+	//		return std::cout;
+	//	}
+	//};
+	//template<>
+	//struct InforLevel<base::info_type::std_file> {
+	//	std::ofstream& get_info_type() {
+	//		return InforWrap::get_instance(RECORD_NAME)->get_stream();
+	//	}
+	//};
+	template<int info_level>
+	class InfoLevel : public pattern::SingletonPattern<InfoLevel<info_level>> {};
 	template<>
-	struct InforLevel<base::infor_type::dummy> {
-		Dummy& get_info_type() {
-			return Dummy();
+	class InfoLevel<0> : public pattern::SingletonPattern<InfoLevel<0>> {
+		friend pattern::SingletonPattern<InfoLevel<0>>;
+	public:
+		base::info_type get_info_type() {
+			return base::info_type::dummy;
 		}
 	};
 	template<>
-	struct InforLevel<base::infor_type::console> {
-		std::ostream& get_info_type() {
-			return std::cout;
+	class InfoLevel<1> : public pattern::SingletonPattern<InfoLevel<1>> {
+		friend pattern::SingletonPattern<InfoLevel<1>>;
+	public:
+		base::info_type get_info_type() {
+			return base::info_type::console;
 		}
 	};
 	template<>
-	struct InforLevel<base::infor_type::std_file> {
-		std::ofstream& get_info_type() {
-			return InforWrap::get_instance(RECORD_NAME)->get_stream();
+	class InfoLevel<2> : public pattern::SingletonPattern<InfoLevel<2>> {
+		friend pattern::SingletonPattern<InfoLevel<2>>;
+	public:
+		base::info_type get_info_type() {
+			return base::info_type::std_file;
 		}
 	};
 	template<typename _stream_type>
@@ -125,66 +159,129 @@ namespace module {
 	private:
 		friend pattern::SingletonPattern<InforAdaptor>;
 	};
-	template<typename _stream_type = STREAM_TYPE>
+	template<base::info_type _info_type>
 	class Information {
+	//class Information : public pattern::SingletonPattern<Information<_info_type>> {
 	public:
 		template<typename ..._args>
+		Information(_args&&... args) {}
+		//friend pattern::SingletonPattern<Information<_info_type>>;
+	};
+	// there is no need for this definition
+	//template<>
+	//class Information<base::info_type::dummy> : public pattern::SingletonPattern<Information<base::info_type::dummy>> {
+	//	template<typename ..._args>
+	//	Information(_args&&... args) {}
+	//	~Information() = default;
+	//	friend pattern::SingletonPattern<Information<base::info_type::dummy>>;
+	//};
+	template<>
+	class Information<base::info_type::console> {
+	//class Information<base::info_type::console> : public pattern::SingletonPattern<Information<base::info_type::console>> {
+	private:
+		template<typename ..._args>
 		Information(std::string function_name, _args&&... args) : __function_name(function_name) {
-			auto infor_adaptor = InforAdaptor<_stream_type>::get_instance(ObjectAdaptor<_stream_type>().get_object());
-			infor_adaptor->out_formation(std::forward<_args>(args)...);
+			auto info_adaptor = InforAdaptor<std::ostream>::get_instance(std::cout);
+			info_adaptor->out_formation(std::forward<_args>(args)...);
 		}
 	public:
 		~Information() {
-			auto infor_adaptor = InforAdaptor<_stream_type>::get_instance(ObjectAdaptor<_stream_type>().get_object());
-			infor_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " ms");
+			auto info_adaptor = InforAdaptor<std::ostream>::get_instance(std::cout);
+			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " ms");
 		}
-	private:
-		//template<typename _type>
-		//typename std::enable_if<std::is_same<_stream_type, Dummy>::value, Dummy>::type& __get_object() {
-		//	return Dummy();
-		//}
-		//template<typename _type>
-		//typename std::enable_if<std::is_same<_stream_type, std::ostream>::value, std::ostream>::type& __get_object() {
-		//	return std::cout;
-		//}
-		//template<typename _type>
-		//typename std::enable_if<std::is_same<_stream_type, std::ofstream>::value, std::ofstream>::type& __get_object() {
-		//	return InforWrap::get_instance(RECORD_NAME)->get_stream();
-		//}
-		//template<>
-		//typename std::conditional<std::is_same<_stream_type, Dummy>::value, Dummy, Dummy>::type& __get_object() {
-		//	return Dummy();
-		//}
-	private:
-		// original class type is not defined yet, so it is impossible to get a <> type object
-		template<typename _dummy_type>
-		struct ObjectAdaptor;
-		template<>
-		struct ObjectAdaptor<Dummy> {
-			Dummy& get_object() {
-				return Dummy();
-			};
-		};
-		template<>
-		struct ObjectAdaptor<std::ostream> {
-			std::ostream& get_object() {
-				return std::cout;
-			}
-		};
-		template<>
-		struct ObjectAdaptor<std::ofstream> {
-			std::ofstream& get_object() {
-				return InforWrap::get_instance(RECORD_NAME)->get_stream();
-			}
-		};
-		//template<>
-		//struct ObjectWrapper<std::ofstream> {
-		//	typename std::conditional<std::is_same<_stream_type, Dummy>::value, Dummy, Dummy>::type& get_object() {
-		//		return Dummy();
-		//	}
-		//};
 	private:
 		TimeClock __time_clock;
 		std::string __function_name;
+	private:
+		//friend pattern::SingletonPattern<Information<base::info_type::console>>;
 	};
+	template<>
+	class Information<base::info_type::std_file> {
+	// why can i not use singleton pattern ? when the variable __mutex is released ?
+	//class Information<base::info_type::std_file> : public pattern::SingletonPattern<Information<base::info_type::std_file>> {
+	private:
+	public:
+		template<typename ..._args>
+		Information(std::string function_name, _args&&... args) : __function_name(function_name) {
+			auto info_adaptor = InforAdaptor<std::ofstream>::get_instance(__get_object());
+			info_adaptor->out_formation(std::forward<_args>(args)...);
+		}
+	public:
+		~Information() {
+			auto info_adaptor = InforAdaptor<std::ofstream>::get_instance(__get_object());
+			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " ms");
+		}
+	private:
+		std::ofstream& __get_object() {
+			return InforWrap::get_instance(RECORD_NAME)->get_stream();
+		}
+	private:
+		TimeClock __time_clock;
+		std::string __function_name;
+	private:
+		//friend pattern::SingletonPattern<Information<base::info_type::std_file>>;
+	};
+	// leave for remember
+	//template<typename _stream_type = STREAM_TYPE>
+	//class Information {
+	//public:
+	//	template<typename ..._args>
+	//	Information(std::string function_name, _args&&... args) : __function_name(function_name) {
+	//		auto info_adaptor = InforAdaptor<_stream_type>::get_instance(ObjectAdaptor<_stream_type>().get_object());
+	//		info_adaptor->out_formation(std::forward<_args>(args)...);
+	//	}
+	//public:
+	//	~Information() {
+	//		auto info_adaptor = InforAdaptor<_stream_type>::get_instance(ObjectAdaptor<_stream_type>().get_object());
+	//		info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " ms");
+	//	}
+	//private:
+	//	//template<typename _type>
+	//	//typename std::enable_if<std::is_same<_stream_type, Dummy>::value, Dummy>::type& __get_object() {
+	//	//	return Dummy();
+	//	//}
+	//	//template<typename _type>
+	//	//typename std::enable_if<std::is_same<_stream_type, std::ostream>::value, std::ostream>::type& __get_object() {
+	//	//	return std::cout;
+	//	//}
+	//	//template<typename _type>
+	//	//typename std::enable_if<std::is_same<_stream_type, std::ofstream>::value, std::ofstream>::type& __get_object() {
+	//	//	return InforWrap::get_instance(RECORD_NAME)->get_stream();
+	//	//}
+	//	//template<>
+	//	//typename std::conditional<std::is_same<_stream_type, Dummy>::value, Dummy, Dummy>::type& __get_object() {
+	//	//	return Dummy();
+	//	//}
+	//private:
+	//	// original class type is not defined yet, so it is impossible to get a <> type object
+	//	template<typename _dummy_type>
+	//	struct ObjectAdaptor;
+	//	template<>
+	//	struct ObjectAdaptor<Dummy> {
+	//		Dummy& get_object() {
+	//			return Dummy();
+	//		};
+	//	};
+	//	template<>
+	//	struct ObjectAdaptor<std::ostream> {
+	//		std::ostream& get_object() {
+	//			return std::cout;
+	//		}
+	//	};
+	//	template<>
+	//	struct ObjectAdaptor<std::ofstream> {
+	//		std::ofstream& get_object() {
+	//			return InforWrap::get_instance(RECORD_NAME)->get_stream();
+	//		}
+	//	};
+	//	//template<>
+	//	//struct ObjectWrapper<std::ofstream> {
+	//	//	typename std::conditional<std::is_same<_stream_type, Dummy>::value, Dummy, Dummy>::type& get_object() {
+	//	//		return Dummy();
+	//	//	}
+	//	//};
+	//private:
+	//	TimeClock __time_clock;
+	//	std::string __function_name;
+	//};
 }
