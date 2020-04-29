@@ -31,9 +31,9 @@ namespace module {
 	
 #define RECORD_NAME "algorithm.txt"
 
-#define INFO_TYPE base::info_type::dummy
+//#define INFO_TYPE base::info_type::dummy
 #define INFO_TYPE base::info_type::console
-#define INFO_TYPE base::info_type::std_file
+//#define INFO_TYPE base::info_type::std_file
 
 	struct Dummy {
 		using type = Dummy;
@@ -179,6 +179,7 @@ namespace module {
 	class Information<base::info_type::console> {
 	//class Information<base::info_type::console> : public pattern::SingletonPattern<Information<base::info_type::console>> {
 	private:
+	public:
 		template<typename ..._args>
 		Information(std::string function_name, _args&&... args) : __function_name(function_name) {
 			auto info_adaptor = InforAdaptor<std::ostream>::get_instance(std::cout);
@@ -187,7 +188,7 @@ namespace module {
 	public:
 		~Information() {
 			auto info_adaptor = InforAdaptor<std::ostream>::get_instance(std::cout);
-			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " ms");
+			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " us");
 		}
 	private:
 		TimeClock __time_clock;
@@ -197,7 +198,7 @@ namespace module {
 	};
 	template<>
 	class Information<base::info_type::std_file> {
-	// why can i not use singleton pattern ? when the variable __mutex is released ?
+	// why can i not use singleton pattern ? when and where the variable __mutex is released ?
 	//class Information<base::info_type::std_file> : public pattern::SingletonPattern<Information<base::info_type::std_file>> {
 	private:
 	public:
@@ -209,7 +210,7 @@ namespace module {
 	public:
 		~Information() {
 			auto info_adaptor = InforAdaptor<std::ofstream>::get_instance(__get_object());
-			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " ms");
+			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " us");
 		}
 	private:
 		std::ofstream& __get_object() {
@@ -221,7 +222,7 @@ namespace module {
 	private:
 		//friend pattern::SingletonPattern<Information<base::info_type::std_file>>;
 	};
-	// leave for remember
+	// leave for note
 	//template<typename _stream_type = STREAM_TYPE>
 	//class Information {
 	//public:

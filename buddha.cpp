@@ -22,13 +22,20 @@
 #include "module_path_walker.h"
 #include "module_memory_pool.h"
 #include "module_thread_pool.h"
+#include "module_meta_program.h"
 
 // test for memory leak
 #include "vld.h"
 
 int main() {
-	auto res = module::Information<INFO_TYPE>("main", "_1st ", 1, " _2nd ", "2");
-	//log info
+	auto res = module::Information<INFO_TYPE>(__FUNCTION__, "_1st ", 1, " _2nd ", "2");
+	{
+		// meta program
+		using namespace module::merge_sort;
+		print(sort<int_list<81, 52, 3, 48, 15, 99, 20>>::type());
+	}
+
+	//log info 
 	//decltype(module::InforLevel<base::infor_type::console>().get_info_type());
 	//auto mo = module::InforAdaptor(aa);
 	//mo.out_formation("asa", 1);
