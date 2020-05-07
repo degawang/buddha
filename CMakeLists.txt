@@ -14,9 +14,11 @@ set_property(TARGET module_reflection PROPERTY FOLDER "module")
 set_property(TARGET module_path_walker PROPERTY FOLDER "module")
 set_property(TARGET module_time_clock PROPERTY FOLDER "module")
 set_property(TARGET module_information PROPERTY FOLDER "module")
+set_property(TARGET module_image_tools PROPERTY FOLDER "module")
 set_property(TARGET module_memory_pool PROPERTY FOLDER "module")
 set_property(TARGET module_thread_pool PROPERTY FOLDER "module")
 set_property(TARGET module_meta_program PROPERTY FOLDER "module")
+set_property(TARGET module_stl_algorithm PROPERTY FOLDER "module")
 set_property(TARGET pattern_singleton_pattern PROPERTY FOLDER "pattern")
 
 set_property(TARGET algorithm_base PROPERTY FOLDER "algorithm")
@@ -50,10 +52,12 @@ target_link_libraries(${PROJECT_NAME}
                       module_reflection
 					  module_time_clock
 					  module_information
+					  module_image_tools
 					  module_memory_pool
 					  module_path_walker
 					  module_thread_pool
 					  module_meta_program
+					  module_stl_algorithm
 					  pattern_singleton_pattern)
 
 target_include_directories(${PROJECT_NAME}

@@ -27,13 +27,16 @@
 #include "algorithm_base.h"
 #include "module_time_clock.h"
 
+
 namespace module {
 	
 #define RECORD_NAME "algorithm.txt"
 
-//#define INFO_TYPE base::info_type::dummy
-#define INFO_TYPE base::info_type::console
+#define INFO_TYPE base::info_type::dummy
+//#define INFO_TYPE base::info_type::console
 //#define INFO_TYPE base::info_type::std_file
+
+
 
 	struct Dummy {
 		using type = Dummy;
@@ -48,6 +51,7 @@ namespace module {
 			return *this;
 		}
 	};
+	
 	class InforWrap : public pattern::SingletonPattern<InforWrap> {
 	public:
 		~InforWrap() {
@@ -143,8 +147,8 @@ namespace module {
 			__stream_object << "debug information : ";
 			__out_stream(std::forward<_args>(args)...);
 			// self defined << can not be accepted by the std::endl function
-			//__stream_object << std::endl;
-			__stream_object << "\n";
+			// u can define anther endl function to specialized the model function
+			__stream_object << std::endl;
 		}
 	private:
 		void __out_stream() {};
@@ -285,4 +289,11 @@ namespace module {
 	//	TimeClock __time_clock;
 	//	std::string __function_name;
 	//};
+}
+
+namespace std {
+	// specialized the function endl for Dummy in namespace std
+	module::Dummy& endl(module::Dummy& stream_object) {
+		return stream_object;
+	}
 }
