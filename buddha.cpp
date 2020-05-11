@@ -11,6 +11,7 @@
 #include <thread>
 #include <vector>
 #include <fstream>
+#include <sstream>
 #include <iostream>
 
 #include "base/base.h"
@@ -45,10 +46,10 @@ struct format<intger_number<>, intger_number<_arg_rest...>> {
 	enum { value = format<intger_number<_arg_rest...>>::value };
 };
 
-template<int _arg_1, int... _arg_rest>
-struct format<intger_number<_arg_1>, intger_number<_arg_rest...>> {
-	enum { value = format<intger_number<_arg_1>, intger_number<_arg_rest...>>::value };
-};
+//template<int _arg_1, int... _arg_rest>
+//struct format<intger_number<_arg_1>, intger_number<_arg_rest...>> {
+//	enum { value = format<intger_number<_arg_1>, intger_number<_arg_rest...>>::value };
+//};
 
 template<int _arg_1, int _arg_2, int... _arg_rest>
 struct format<intger_number<_arg_1, _arg_2>, intger_number<_arg_rest...>> {
@@ -62,12 +63,67 @@ void printline(intger_number<_args...>) {
 	::std::endl(::std::cout);
 }
 
-
-
 int main() {
 	{
+		// test for log info
+		//auto res = module::Information<INFO_TYPE>(__FUNCTION__, "_1st ", 1, " _2nd ", "2");
+		//res.write_infomation("stringstream");
+	}
+	{
+		// test for mat
+		using namespace module::colorspace;
+		Mat a(10, 10, base::image_format::image_format_gray);
+		// char '0'
+		a.set_value(48);
+		for (int j = 0; j < 1; ++j) {
+			//auto b = a;
+			//auto c = b.rect(3, 7, 3, 7);
+			//c.set_value(50);
+		}
+		//auto b = a.rect(3, 7, 3, 7);
+		//for (int i = 0; i < 10; ++i) {
+		//	for (int j = 0; j < 10; ++j) {
+		//		std::cout << int(a[0][i * 10 + j]) << "  ";
+		//	}
+		//	std::cout << std::endl;
+		//}
+		//for (int i = 0; i < 4; ++i) {
+		//	for (int j = 0; j < 4; ++j) {
+		//		std::cout << int(b[0][i * 4 + j]) << "  ";
+		//	}
+		//	std::cout << std::endl;
+		//}
+		//b.set_value(55);
+
+		auto b = a;
+		auto c(b.rect(3, 7, 3, 7));
+		c.set_value(50);
+
+		for (int i = 0; i < 10; ++i) {
+			for (int j = 0; j < 10; ++j) {
+				std::cout << int(a[0][i * 10 + j]) << "  ";
+			}
+			std::cout << std::endl;
+		}
+		for (int i = 0; i < 10; ++i) {
+			for (int j = 0; j < 10; ++j) {
+				std::cout << int(b[0][i * 10 + j]) << "  ";
+			}
+			std::cout << std::endl;
+		}
+		{
+			//for (int i = 0; i < 100; i++)
+			//{
+			//	for (int j = 0; j < 100; j++) {
+			//		auto b(Mat(2560, 2560, base::image_format::image_format_bgr));
+			//		auto c = b.copy();
+			//	}
+			//}
+		}
+	}
+	{
 		// meta
-		std::cout << format<intger_number<1>, intger_number<1, 2, 3>>::value << std::endl;
+		//std::cout << format<intger_number<1>, intger_number<1, 2, 3>>::value << std::endl;
 		//printline(intger_number<format<1, 2>::value>{})
 	}
 	{

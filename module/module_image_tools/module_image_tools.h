@@ -38,7 +38,7 @@
 
 namespace module {
 
-	template<class _derived, bool _shareable = true>
+	template<class _derived>
 	class ReferCount {
 	public:
 		//ReferCount() : __shareable(_shareable), __refer_count(nullptr) {
@@ -76,22 +76,44 @@ namespace module {
 		//	}
 		//	return *this;
 		//}
-	protected:
-		void __add_ref_count() {
+	protected:		
+		void _shallow_clean() {
+			__release();
+		}
+		int* _get_refer() {
+			return __refer_count;
+		}
+		int* _get_refer() const {
+			return __refer_count;
+		}
+		void _add_ref_count() {
 			//std::lock_guard<std::recursive_mutex> lock(__mutex);
 			if (__refer_count) {
 				(*__refer_count)++;
 			}
 		}
-		void __dec_ref_count() {
+		void _dec_ref_count() {
 			//std::lock_guard<std::recursive_mutex> lock(__mutex);
-			if (__refer_count) {
-				if (((*__refer_count)--) == 1) {
-					__uninit();
+			if (__derived().__shareable) {
+				if (__refer_count) {
+					if (((*__refer_count)--) == 1) {
+						__uninit();
+					}
 					__release();
 				}
 			}
 		}
+		void _init(int* ref_count) {
+			__refer_count = ref_count;
+		}
+		//void _init_with(int* ref_count) {
+		//	__refer_count = ref_count;
+		//}
+		//void _init_with(int count, int* ref_count) {
+		//	*ref_count = count;
+		//	__refer_count = ref_count;
+		//}
+	private:
 		_derived& __derived() { 
 			return *static_cast<_derived*>(this); 
 		}
@@ -100,40 +122,160 @@ namespace module {
 		}
 		void __release() {
 			__refer_count = nullptr;
-			__derived().__clear();
-		}
-		void __init_new() {
-			__refer_count = new int(1);
-		}
-		void __init_with(int count, int* ref_count) {
-			*ref_count = count;
-			__refer_count = ref_count;
+			__derived().__shallow_clean();
 		}
 		void __uninit() {
 			delete __refer_count;
 			__derived().__dellocator();
 		}
 	protected:
-		bool __shareable;
 		int* __refer_count;
 		//std::recursive_mutex __mutex;
 	};
 
 	template<typename _data_type = unsigned char, int _align_size = 64>
-	class MatData : public ReferCount<MatData<_data_type, _align_size>, true> {
+	class MatData : public ReferCount<MatData<_data_type, _align_size>> {
 	public:
-		MatData() {
-			__clear();
-			__init_new();
+		MatData(bool shareable = true) : __shareable(shareable) {
+			_shallow_clean();
+			if (__shareable) {
+				_init(new int(1));
+			}
 		}
-		MatData(int width, int height, int code_format)
-			: __width(width), __height(height), __pitch{ 0 }, __channels(0), __chunck_size{ 0 }, __code_format(code_format), __data{ nullptr } {
-			__clear();
-			__init_new();
+		MatData(int width, int height, base::image_format code_format) noexcept
+			: __width(width), __height(height), __pitch{ 0 }, __shareable(true), __chunck_size{ 0 }, __code_format(int(code_format)), __data{ nullptr } {
+			_init(new int(1));
 			__allocator();
 		}
 		~MatData() {
-			__dec_ref_count();
+			_dec_ref_count();
+		}
+	public:
+		MatData(MatData&& object) noexcept {
+			_shallow_clean();
+			_init(object._get_refer());
+			__width = object.__width;
+			__height = object.__height;
+			__shareable = object.__shareable;
+			__code_format = object.__code_format;
+			for (size_t i = 0; i < 4; ++i) {
+				__data[i] = object.__data[i];
+				__pitch[i] = object.__pitch[i];
+			}
+			object._shallow_clean();
+		}
+		MatData(const MatData& object) noexcept {
+			_shallow_clean();
+			_init(object._get_refer());
+			_add_ref_count();
+			__width = object.__width;
+			__height = object.__height;
+			__shareable = object.__shareable;
+			__code_format = object.__code_format;
+			for (size_t i = 0; i < 4; ++i) {
+				__data[i] = object.__data[i];
+				__pitch[i] = object.__pitch[i];
+			}
+		}
+		// one kind of copy constructor
+		//MatData(const MatData& object) noexcept {
+		//	_shallow_clean();
+		//	_init(new int(1));
+		//	__width = object.__width;
+		//	__height = object.__height;
+		//	__shareable = object.__shareable;
+		//	__code_format = object.__code_format;
+		//	__allocator();
+		//	__copy_data(object);
+		//}
+	public:
+		MatData& operator= (MatData&& object) {
+			if (&object != this) {
+				_dec_ref_count();
+				_shallow_clean();
+				_init(object._get_refer());
+				__width = object.__width;
+				__height = object.__height;
+				__shareable = object.__shareable;
+				__code_format = object.__code_format;
+				for (size_t i = 0; i < 4; ++i) {
+					__data[i] = object.__data[i];
+					__pitch[i] = object.__pitch[i];
+				}
+				object._shallow_clean();
+			}
+			return *this;
+		}
+		MatData& operator= (const MatData& object) {
+			if (&object != this) {
+				_dec_ref_count();
+				_shallow_clean();
+				_init(object._get_refer());
+				_add_ref_count();
+				__width = object.__width;
+				__height = object.__height;
+				__shareable = object.__shareable;
+				__code_format = object.__code_format;
+				for (size_t i = 0; i < 4; ++i) {
+					__data[i] = object.__data[i];
+					__pitch[i] = object.__pitch[i];
+				}
+			}
+			return *this;
+		}
+	public:
+		MatData& crop(int left, int right, int top, int bottom) {
+			return rect(left, right, top, bottom);
+		}
+		MatData& rect(int left, int right, int top, int bottom) {
+			MatData region(false);
+			region.__width = right - left;
+			region.__height = bottom - top;
+			for (size_t i = 0; i < 4; ++i) {
+				region.__pitch[i] = __pitch[i];
+			}
+			region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<2>()]);			
+			return region;
+		}
+	public:
+		_data_type* operator[] (int index) {
+			return __data[index];
+		}
+		_data_type* operator[] (int index) const {
+			return __data[index];
+		}
+	public:
+		_data_type* data(int index = 0) {
+			return __data[index];
+		}
+		_data_type* data(int index = 0) const {
+			return __data[index];
+		}
+		MatData& copy() {
+			//return MatData(*this);
+			auto ret = MatData(*this);
+			return ret;
+		}
+		void set_value(_data_type value) {
+			// assert(__code_format != base::image_format::image_format_nv12 || __code_format != base::image_format::image_format_nv21);
+			// it is correct only the data type is single type
+			// if the data type is int, then the initial value
+			// is 0x(value)(value)(value)(value)
+			// data is or not continues
+			if (__shareable) {
+				std::memset(__data[0], value, __chunck_size[0]);
+			}
+			else {
+				for (int i = 0; i < __height; ++i) {
+					std::memset(&__data[0][i * __pitch[0]], value, __pitch[0]);
+				}
+			}
+		}
+	public:
+		std::string get_info(std::string name = "dummy") {
+			std::stringstream info;
+			info << name << " -- " << "width : " << __width << ", height : " << __height << ", format : " << __code_format << std::endl;
+			return info.str();
 		}
 	public:
 		const int get_width() const {
@@ -142,14 +284,14 @@ namespace module {
 		const int get_height() const {
 			return __height;
 		}
-		int get_format_code() const {
-			return int(__code_format);
+		const int get_format_code() const {
+			return __code_format;
 		}
 		// when the data format is nv12 or nv21, be careful
 		_data_type* get_data(int plane_index = 0, int row = 0) {
 			return &__data[plane_index][row * __pitch[plane_index]];
 		}
-		_data_type* get_data(int plane_index = 0, int row = 0) const {
+		const _data_type* get_data(int plane_index = 0, int row = 0) const {
 			return &__data[plane_index][row * __pitch[plane_index]];
 		}
 	public:
@@ -167,10 +309,29 @@ namespace module {
 		//	}
 		//}
 	private:
-		void __clear() {
+		void __copy_data(const MatData& object) {
+
+			std::cout << std::boolalpha << __shareable << std::endl;
+
+			if (__shareable) {
+				// continues
+				for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
+					std::copy_n(object.__data[i], __chunck_size[i], __data[i]);
+				}
+			}
+			else {
+				// not continues(rect  region)
+				for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
+					for (int i = 0; i < __height; ++i) {
+						std::copy_n(&object.__data[i][i * __pitch[i]], __pitch[i], __data[i]);
+					}
+				}
+			}
+		}
+	private:
+		void __shallow_clean() {
 			__width = 0;
 			__height = 0;
-			__channels = 0;
 			__code_format = 0;
 			for (size_t i = 0; i < 4; ++i) {
 				__pitch[i] = 0;
@@ -180,7 +341,7 @@ namespace module {
 		}
 		void __allocator() {
 			__get_format_details();
-			for (size_t i = 0; i < 4; ++i) {
+			for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
 				__data[i] = new _data_type[__chunck_size[i]];
 			}
 		}
@@ -197,30 +358,32 @@ namespace module {
 		int __cacu_pitch(int width, int bit_count) {
 			return (((int)(width) * (bit_count)+31) / 32 * 4);
 		}
-		void __cacu_memory_size() {
+		void __cacu_chunck_size() {
 			for (size_t i = 0; i < 4; ++i) {
-				__chunck_size[i] = __height * pitch[i];
+				__chunck_size[i] = __height * __pitch[i];
 			}
 		}
-		void __adjust_memory_size() {
+		void __adjust_chunck_size() {
 			switch (__code_format) {
-			case base::format_code<2,1,0>:
-			case base::format_code<2,1,1>:
-				__height * __pitch[1] / 2;
+			case base::image_format::image_format_nv12:
+			case base::image_format::image_format_nv21:
+				__chunck_size[1] = __height * __pitch[1] / 2;
 			}
 		}
 		void __get_format_details() {
 			for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
 				__pitch[i] = __cacu_pitch(__width, 8 * __parse_format_code<2>());
 			}
-			__cacu_memory_size();
-			__adjust_memory_size();
+			__cacu_chunck_size();
+			__adjust_chunck_size();
 		}
+	private:
+		bool __shareable;
 	private:
 		int __width;
 		int __height;
 		int __pitch[4];
-		int __channels;
+		//int __channels;
 		int __code_format;
 		int __chunck_size[4];
 	private:

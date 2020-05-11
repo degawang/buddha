@@ -1,7 +1,7 @@
 /*
  * @Author: degawong
  * @Date: 2020-04-24 14:39:21
- * @LastEditTime: 2020-04-27 15:29:43
+ * @LastEditTime: 2020-05-11 18:37:46
  * @LastEditors: Please set LastEditors
  * @Description: add template partial specialization
  * @FilePath: buddha/module/module_information/module_information.h
@@ -32,11 +32,9 @@ namespace module {
 	
 #define RECORD_NAME "algorithm.txt"
 
-#define INFO_TYPE base::info_type::dummy
-//#define INFO_TYPE base::info_type::console
+//#define INFO_TYPE base::info_type::dummy
+#define INFO_TYPE base::info_type::console
 //#define INFO_TYPE base::info_type::std_file
-
-
 
 	struct Dummy {
 		using type = Dummy;
@@ -169,6 +167,8 @@ namespace module {
 	public:
 		template<typename ..._args>
 		Information(_args&&... args) {}
+	public:
+		void write_infomation(std::string info) {}
 		//friend pattern::SingletonPattern<Information<_info_type>>;
 	};
 	// there is no need for this definition
@@ -194,6 +194,11 @@ namespace module {
 			auto info_adaptor = InforAdaptor<std::ostream>::get_instance(std::cout);
 			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " us");
 		}
+	public:
+		void write_infomation(std::string info) {
+			auto info_adaptor = InforAdaptor<std::ostream>::get_instance(std::cout);
+			info_adaptor->out_formation(info);
+		}
 	private:
 		TimeClock __time_clock;
 		std::string __function_name;
@@ -215,6 +220,11 @@ namespace module {
 		~Information() {
 			auto info_adaptor = InforAdaptor<std::ofstream>::get_instance(__get_object());
 			info_adaptor->out_formation(__function_name.c_str(), " cost ", __time_clock.time_duration(), " us");
+		}
+	public:
+		void write_infomation(std::string info) {
+			auto info_adaptor = InforAdaptor<std::ofstream>::get_instance(__get_object());
+			info_adaptor->out_formation(info);
 		}
 	private:
 		std::ofstream& __get_object() {
