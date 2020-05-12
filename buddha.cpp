@@ -96,7 +96,7 @@ int main() {
 		//b.set_value(55);
 
 		auto b = a;
-		auto c(b.rect(3, 7, 3, 7));
+		auto c(b.rect(3, 5, 3, 5));
 		c.set_value(50);
 
 		for (int i = 0; i < 10; ++i) {
@@ -105,20 +105,13 @@ int main() {
 			}
 			std::cout << std::endl;
 		}
+		auto d = a.copy();
+		d.set_value(100);
 		for (int i = 0; i < 10; ++i) {
 			for (int j = 0; j < 10; ++j) {
-				std::cout << int(b[0][i * 10 + j]) << "  ";
+				std::cout << int(d[0][i * 10 + j]) << "  ";
 			}
 			std::cout << std::endl;
-		}
-		{
-			//for (int i = 0; i < 100; i++)
-			//{
-			//	for (int j = 0; j < 100; j++) {
-			//		auto b(Mat(2560, 2560, base::image_format::image_format_bgr));
-			//		auto c = b.copy();
-			//	}
-			//}
 		}
 	}
 	{

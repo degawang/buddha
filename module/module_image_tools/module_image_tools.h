@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-04-30 10:39:53
+ * @LastEditTime: 2020-05-12 14:52:22
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \buddha\module\module_image_tools\module_image_tools.h
+ */
 #pragma once
 
 #include <deque>
@@ -142,6 +150,11 @@ namespace module {
 				_init(new int(1));
 			}
 		}
+		MatData(int width, int height, int code_format) noexcept
+			: __width(width), __height(height), __pitch{ 0 }, __shareable(true), __chunck_size{ 0 }, __code_format(code_format), __data{ nullptr } {
+			_init(new int(1));
+			__allocator();
+		}
 		MatData(int width, int height, base::image_format code_format) noexcept
 			: __width(width), __height(height), __pitch{ 0 }, __shareable(true), __chunck_size{ 0 }, __code_format(int(code_format)), __data{ nullptr } {
 			_init(new int(1));
@@ -209,6 +222,7 @@ namespace module {
 		MatData& operator= (const MatData& object) {
 			if (&object != this) {
 				_dec_ref_count();
+				// why ?
 				_shallow_clean();
 				_init(object._get_refer());
 				_add_ref_count();
@@ -253,7 +267,8 @@ namespace module {
 		}
 		MatData& copy() {
 			//return MatData(*this);
-			auto ret = MatData(*this);
+			auto ret = MatData(__width, __height, __code_format);
+			ret.__copy_data(*this);
 			return ret;
 		}
 		void set_value(_data_type value) {
