@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-30 10:39:53
- * @LastEditTime: 2020-05-14 16:32:33
+ * @LastEditTime: 2020-05-14 17:35:37
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \buddha\module\module_image_tools\module_image_tools.h
@@ -244,10 +244,16 @@ namespace module {
 			region.__height = bottom - top;
 			region.__code_format = __code_format;
 			// to be modification
-			for(int i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
-				region.__pitch[i] = __pitch[i];
-				region.__data[i] = &(__data[i][top >> i * __pitch[i] + left * __parse_format_code<base::image_info::element_number>()]);
+			region.__pitch[0] = __pitch[0];
+			region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<base::image_info::element_number>()]);
+			if(base::any_equel(__code_format, base::image_format::image_format_nv12, base::image_format::image_format_nv21)) {
+				region.__pitch[1] = __pitch[1];
+				region.__data[1] = &(__data[1][(top >> 1) * __pitch[0] + ((left >> 1) << 1)]);
 			}
+			//for(int i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
+			//	region.__pitch[i] = __pitch[i];
+			//	region.__data[i] = &(__data[i][top >> i * __pitch[i] + left * __parse_format_code<base::image_info::element_number>()]);
+			//}
 			return region;
 		}
 	public:
