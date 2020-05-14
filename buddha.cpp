@@ -65,9 +65,6 @@ void printline(intger_number<_args...>) {
 
 int main() {
 	{
-		std::vector<int>::iterator a;
-	}
-	{
 		// test for log info
 		//auto res = module::Information<INFO_TYPE>(__FUNCTION__, "_1st ", 1, " _2nd ", "2");
 		//res.write_infomation("stringstream");
@@ -75,7 +72,7 @@ int main() {
 	{
 		// test for mat
 		using namespace module::colorspace;
-		Mat a(10, 10, base::image_format::image_format_gray);
+		Mat a(10, 10, int(base::image_format::image_format_gray));
 		a.set_value(0);
 		auto b = a;
 		auto c(b.rect(3, 5, 3, 5));
@@ -96,7 +93,7 @@ int main() {
 			}
 			std::cout << std::endl;
 		}
-		//auto d = a.copy();
+		auto e = a.copy();
 		//d.set_value(100);
 		//for (int i = 0; i < 10; ++i) {
 		//	for (int j = 0; j < 10; ++j) {

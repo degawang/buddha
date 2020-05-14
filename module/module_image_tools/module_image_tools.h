@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-30 10:39:53
- * @LastEditTime: 2020-05-14 14:43:09
+ * @LastEditTime: 2020-05-14 16:32:33
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \buddha\module\module_image_tools\module_image_tools.h
@@ -155,11 +155,6 @@ namespace module {
 			_init(new int(1));
 			__allocator();
 		}
-		MatData(int width, int height, base::image_format code_format) noexcept
-			: __width(width), __height(height), __pitch{ 0 }, __shareable(true), __chunck_size{ 0 }, __code_format(int(code_format)), __data{ nullptr } {
-			_init(new int(1));
-			__allocator();
-		}
 		~MatData() {
 			_dec_ref_count();
 		}
@@ -240,7 +235,7 @@ namespace module {
 			return *this;
 		}
 	public:
-		MatData& crop(int left, int right, int top, int bottom) {
+		MatData crop(int left, int right, int top, int bottom) {
 			return rect(left, right, top, bottom);
 		}
 		MatData rect(int left, int right, int top, int bottom) {
@@ -249,11 +244,10 @@ namespace module {
 			region.__height = bottom - top;
 			region.__code_format = __code_format;
 			// to be modification
-			for (size_t i = 0; i < 4; ++i) {
+			for(int i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
 				region.__pitch[i] = __pitch[i];
+				region.__data[i] = &(__data[i][top >> i * __pitch[i] + left * __parse_format_code<base::image_info::element_number>()]);
 			}
-			region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<base::image_info::element_number>()]);
-			//region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<base::image_info::element_number>()]);			
 			return region;
 		}
 	public:
@@ -348,9 +342,6 @@ namespace module {
 		//}
 	private:
 		void __copy_data(const MatData& object) {
-
-			std::cout << std::boolalpha << __shareable << std::endl;
-
 			if (__shareable) {
 				// continues
 				for (size_t i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
