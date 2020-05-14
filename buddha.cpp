@@ -1,7 +1,7 @@
 /*
  * @Author: degawong 
  * @Date: 2020-03-23 16:41:29
- * @LastEditTime: 2020-04-27 15:32:28
+ * @LastEditTime: 2020-05-14 14:40:39
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: buddha/buddha.cpp
@@ -65,6 +65,9 @@ void printline(intger_number<_args...>) {
 
 int main() {
 	{
+		std::vector<int>::iterator a;
+	}
+	{
 		// test for log info
 		//auto res = module::Information<INFO_TYPE>(__FUNCTION__, "_1st ", 1, " _2nd ", "2");
 		//res.write_infomation("stringstream");
@@ -73,46 +76,34 @@ int main() {
 		// test for mat
 		using namespace module::colorspace;
 		Mat a(10, 10, base::image_format::image_format_gray);
-		// char '0'
-		a.set_value(48);
-		for (int j = 0; j < 1; ++j) {
-			//auto b = a;
-			//auto c = b.rect(3, 7, 3, 7);
-			//c.set_value(50);
-		}
-		//auto b = a.rect(3, 7, 3, 7);
-		//for (int i = 0; i < 10; ++i) {
-		//	for (int j = 0; j < 10; ++j) {
-		//		std::cout << int(a[0][i * 10 + j]) << "  ";
-		//	}
-		//	std::cout << std::endl;
-		//}
-		//for (int i = 0; i < 4; ++i) {
-		//	for (int j = 0; j < 4; ++j) {
-		//		std::cout << int(b[0][i * 4 + j]) << "  ";
-		//	}
-		//	std::cout << std::endl;
-		//}
-		//b.set_value(55);
-
+		a.set_value(0);
 		auto b = a;
 		auto c(b.rect(3, 5, 3, 5));
-		c.set_value(50);
+		c.set_value(1);
 
 		for (int i = 0; i < 10; ++i) {
 			for (int j = 0; j < 10; ++j) {
-				std::cout << int(a[0][i * 10 + j]) << "  ";
+				std::cout << int(b[0][i * b.get_pitch() + j]) << "  ";
 			}
 			std::cout << std::endl;
 		}
-		auto d = a.copy();
-		d.set_value(100);
+		auto d(b.rect(5, 8, 5, 8));
+		d.set_value(90);
+
 		for (int i = 0; i < 10; ++i) {
 			for (int j = 0; j < 10; ++j) {
-				std::cout << int(d[0][i * 10 + j]) << "  ";
+				std::cout << int(b[0][i * b.get_pitch() + j]) << "  ";
 			}
 			std::cout << std::endl;
 		}
+		//auto d = a.copy();
+		//d.set_value(100);
+		//for (int i = 0; i < 10; ++i) {
+		//	for (int j = 0; j < 10; ++j) {
+		//		std::cout << int(d[0][i * 10 + j]) << "  ";
+		//	}
+		//	std::cout << std::endl;
+		//}
 	}
 	{
 		// meta

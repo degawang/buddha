@@ -35,10 +35,10 @@ namespace base {
 	//	enum { value = format_code<format_code<>, _arg_rest...>::value };
 	//};
 
-	template<int _arg>
-	struct format_value {
-		enum { _1st = (_arg >> 8) };
-		enum { _2nd = (_arg & 0x00ff) };
+	enum class image_info {
+		plane_number = 3,
+		format_number = 1,
+		element_number = 2,
 	};
 
 	enum class image_format {

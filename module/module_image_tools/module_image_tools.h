@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-30 10:39:53
- * @LastEditTime: 2020-05-12 14:52:22
+ * @LastEditTime: 2020-05-14 14:43:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \buddha\module\module_image_tools\module_image_tools.h
@@ -180,7 +180,6 @@ namespace module {
 		MatData(const MatData& object) noexcept {
 			_shallow_clean();
 			_init(object._get_refer());
-			_add_ref_count();
 			__width = object.__width;
 			__height = object.__height;
 			__shareable = object.__shareable;
@@ -188,6 +187,9 @@ namespace module {
 			for (size_t i = 0; i < 4; ++i) {
 				__data[i] = object.__data[i];
 				__pitch[i] = object.__pitch[i];
+			}
+			if (__shareable) {
+				_add_ref_count();
 			}
 		}
 		// one kind of copy constructor
@@ -241,16 +243,28 @@ namespace module {
 		MatData& crop(int left, int right, int top, int bottom) {
 			return rect(left, right, top, bottom);
 		}
-		MatData& rect(int left, int right, int top, int bottom) {
+		MatData rect(int left, int right, int top, int bottom) {
 			MatData region(false);
 			region.__width = right - left;
 			region.__height = bottom - top;
+			region.__code_format = __code_format;
+			// to be modification
 			for (size_t i = 0; i < 4; ++i) {
 				region.__pitch[i] = __pitch[i];
 			}
-			region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<2>()]);			
+			region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<base::image_info::element_number>()]);
+			//region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<base::image_info::element_number>()]);			
 			return region;
 		}
+	public:
+		class iterator {
+		public:
+			//using difference_type = typename _Myvec::difference_type;
+			using pointer = _data_type*;
+			using reference = _data_type&;
+			using value_type = _data_type;
+			using iterator_category = std::random_access_iterator_tag;
+		};
 	public:
 		_data_type* operator[] (int index) {
 			return __data[index];
@@ -258,6 +272,12 @@ namespace module {
 		_data_type* operator[] (int index) const {
 			return __data[index];
 		}
+		//_data_type* operator[] (int row, int col) {
+		//	return __data[row * __pitch[0] + col * __parse_format_code<base::image_info::element_number>()];
+		//}
+		//_data_type* operator[] (int row, int col) const {
+		//	return __data[row * __pitch[0] + col * __parse_format_code<base::image_info::element_number>()];
+		//}
 	public:
 		_data_type* data(int index = 0) {
 			return __data[index];
@@ -282,7 +302,7 @@ namespace module {
 			}
 			else {
 				for (int i = 0; i < __height; ++i) {
-					std::memset(&__data[0][i * __pitch[0]], value, __pitch[0]);
+					std::memset(&__data[0][i * __pitch[0]], value, __width * __parse_format_code<base::image_info::element_number>());
 				}
 			}
 		}
@@ -298,6 +318,9 @@ namespace module {
 		}
 		const int get_height() const {
 			return __height;
+		}
+		const int get_pitch(int query = 0) const {
+			return __pitch[query];
 		}
 		const int get_format_code() const {
 			return __code_format;
@@ -330,13 +353,13 @@ namespace module {
 
 			if (__shareable) {
 				// continues
-				for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
+				for (size_t i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
 					std::copy_n(object.__data[i], __chunck_size[i], __data[i]);
 				}
 			}
 			else {
 				// not continues(rect  region)
-				for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
+				for (size_t i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
 					for (int i = 0; i < __height; ++i) {
 						std::copy_n(&object.__data[i][i * __pitch[i]], __pitch[i], __data[i]);
 					}
@@ -356,7 +379,7 @@ namespace module {
 		}
 		void __allocator() {
 			__get_format_details();
-			for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
+			for (size_t i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
 				__data[i] = new _data_type[__chunck_size[i]];
 			}
 		}
@@ -366,10 +389,14 @@ namespace module {
 			}
 		}
 	private:
-		template<int _query>
+		template<base::image_info _query>
 		int __parse_format_code() {
-			return (__code_format >> (8 * (_query - 1))) & 0x00ff;
+			return (__code_format >> (8 * (int(_query) - 1))) & 0x00ff;
 		}
+		//template<int _query>
+		//int __parse_format_code() {
+		//	return (__code_format >> (8 * (_query - 1))) & 0x00ff;
+		//}
 		int __cacu_pitch(int width, int bit_count) {
 			return (((int)(width) * (bit_count)+31) / 32 * 4);
 		}
@@ -387,7 +414,7 @@ namespace module {
 		}
 		void __get_format_details() {
 			for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
-				__pitch[i] = __cacu_pitch(__width, 8 * __parse_format_code<2>());
+				__pitch[i] = __cacu_pitch(__width, 8 * __parse_format_code<base::image_info::element_number>());
 			}
 			__cacu_chunck_size();
 			__adjust_chunck_size();
@@ -398,7 +425,6 @@ namespace module {
 		int __width;
 		int __height;
 		int __pitch[4];
-		//int __channels;
 		int __code_format;
 		int __chunck_size[4];
 	private:
