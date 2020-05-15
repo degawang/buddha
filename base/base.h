@@ -127,6 +127,27 @@ namespace base {
 		return ((args < input) && ...);
 	};
 
+	//template<typename _args, typename _func>
+	//auto operator| (_args&& args, const _func& func) {
+	//	if (true == args) {
+	//		return func(std::forward<_args>(args));
+	//	}
+	//}
+	template<typename _args, typename _func>
+	auto operator| (_args&& args, const _func& func) -> decltype(func(std::forward<_args>(args))) {
+		return func(std::forward<_args>(args));
+	}
+	//template<>
+	//auto operator| <bool, base::return_code> (bool&& args, base::return_code re_code) -> decltype(func(std::forward<_args>(args))) {
+	//	if (true == args) {
+	//		return func(std::forward<_args>(args));
+	//	}
+	//}
+	//template<typename... _args, typename _func>
+	//auto operator| (_args&&... args, const _func& func) -> decltype(func(std::forward<_args>(args)...)) {
+	//	return func(std::forward<_args>(args)...);
+	//}
+
 	class Noncopyable {
 	protected:
 		Noncopyable() = default;

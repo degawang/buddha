@@ -63,7 +63,26 @@ void printline(intger_number<_args...>) {
 	::std::endl(::std::cout);
 }
 
+//template<typename T, class F>
+//auto operator|(T&& param, const F& f) -> decltype(f(std::forward<T>(param)))
+//{
+//	return f(std::forward<T>(param));
+//}
+
 int main() {
+	{
+		//functor
+		using namespace base;
+		auto o = [=](bool a) {
+			std::cout << "functor " << std::endl;
+			return int(7);
+		};
+		auto add_one = [](auto a) {
+			std::cout << a << std::endl;
+			return 1 + a; 
+		};
+		0 | o | add_one;
+	}
 	{
 		// test for log info
 		//auto res = module::Information<INFO_TYPE>(__FUNCTION__, "_1st ", 1, " _2nd ", "2");
@@ -71,36 +90,20 @@ int main() {
 	}
 	{
 		// test for mat
-		using namespace module::colorspace;
-		Mat a(10, 10, int(base::image_format::image_format_gray));
-		a.set_value(0);
-		auto b = a;
-		auto c(b.rect(3, 5, 3, 5));
-		c.set_value(1);
+		//using namespace module::colorspace;
+		//Mat a(10, 10, 65792);
+		//a.set_value(0);
+		//auto b = a;
+		//auto c(b.rect(3, 5, 3, 5));
+		//c.set_value(1);
 
-		for (int i = 0; i < 10; ++i) {
-			for (int j = 0; j < 10; ++j) {
-				std::cout << int(b[0][i * b.get_pitch() + j]) << "  ";
-			}
-			std::cout << std::endl;
-		}
-		auto d(b.rect(5, 8, 5, 8));
-		d.set_value(90);
-
-		for (int i = 0; i < 10; ++i) {
-			for (int j = 0; j < 10; ++j) {
-				std::cout << int(b[0][i * b.get_pitch() + j]) << "  ";
-			}
-			std::cout << std::endl;
-		}
-		auto e = a.copy();
-		//d.set_value(100);
-		//for (int i = 0; i < 10; ++i) {
-		//	for (int j = 0; j < 10; ++j) {
-		//		std::cout << int(d[0][i * 10 + j]) << "  ";
-		//	}
-		//	std::cout << std::endl;
-		//}
+		//auto d(b.rect(5, 8, 5, 8));
+		//d.set_value(9);
+		//std::cout << d;
+		//std::cout << b;
+		//Mat bgr(10, 10, 66304);
+		//Mat yuv(10, 10, 66306);
+		//auto res = module::colorspace::color_convert(bgr, yuv);
 	}
 	{
 		// meta

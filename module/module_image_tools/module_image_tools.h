@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-30 10:39:53
- * @LastEditTime: 2020-05-14 17:35:37
+ * @LastEditTime: 2020-05-15 17:19:20
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \buddha\module\module_image_tools\module_image_tools.h
@@ -246,7 +246,7 @@ namespace module {
 			// to be modification
 			region.__pitch[0] = __pitch[0];
 			region.__data[0] = &(__data[0][top * __pitch[0] + left * __parse_format_code<base::image_info::element_number>()]);
-			if(base::any_equel(__code_format, base::image_format::image_format_nv12, base::image_format::image_format_nv21)) {
+			if(base::any_equel(__code_format, 131328, 131329)) {
 				region.__pitch[1] = __pitch[1];
 				region.__data[1] = &(__data[1][(top >> 1) * __pitch[0] + ((left >> 1) << 1)]);
 			}
@@ -271,6 +271,18 @@ namespace module {
 		}
 		_data_type* operator[] (int index) const {
 			return __data[index];
+		}
+		template<typename _out_iterator>
+		friend const _out_iterator& operator<< (_out_iterator& os, const MatData& mat) {
+			for (int i = 0; i < mat.get_height(); ++i) {
+				for (int j = 0; j < mat.get_width(); ++j) {
+					for (int k = 0; k < mat.get_elements(); ++k) {
+						os << std::right << std::setw(3) << int(mat[0][i * mat.get_pitch() + j * mat.get_elements() + k]) << "  ";
+					}
+				}
+				os << std::endl;
+			}
+			return os;
 		}
 		//_data_type* operator[] (int row, int col) {
 		//	return __data[row * __pitch[0] + col * __parse_format_code<base::image_info::element_number>()];
@@ -321,6 +333,9 @@ namespace module {
 		}
 		const int get_pitch(int query = 0) const {
 			return __pitch[query];
+		}
+		const int get_elements() const {
+			return __parse_format_code<base::image_info::element_number>();
 		}
 		const int get_format_code() const {
 			return __code_format;
@@ -387,7 +402,7 @@ namespace module {
 		}
 	private:
 		template<base::image_info _query>
-		int __parse_format_code() {
+		int __parse_format_code() const {
 			return (__code_format >> (8 * (int(_query) - 1))) & 0x00ff;
 		}
 		//template<int _query>
@@ -403,14 +418,12 @@ namespace module {
 			}
 		}
 		void __adjust_chunck_size() {
-			switch (__code_format) {
-			case base::image_format::image_format_nv12:
-			case base::image_format::image_format_nv21:
+			if (base::any_equel(__code_format, 131328, 131329)) {
 				__chunck_size[1] = __height * __pitch[1] / 2;
 			}
 		}
 		void __get_format_details() {
-			for (size_t i = 0; i < __parse_format_code<3>(); ++i) {
+			for (size_t i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
 				__pitch[i] = __cacu_pitch(__width, 8 * __parse_format_code<base::image_info::element_number>());
 			}
 			__cacu_chunck_size();
@@ -433,6 +446,13 @@ namespace module {
 	namespace colorspace {
 		using data_type = unsigned char;
 		using Mat = MatData<unsigned char, 64>;
+
+		template<typename _args, typename _func>
+		auto operator| (_args&& args, const _func& func) -> decltype(func(std::forward<_args>(args))) {
+			if (true == args) {
+				return func(std::forward<_args>(args));
+			}
+		}
 
 		inline void BGR2YUV(data_type b, data_type g, data_type r, data_type& y, data_type& u, data_type& v) {
 			// not implemented
@@ -463,7 +483,7 @@ namespace module {
 			return base::return_code::unsupport;
 		}
 		template<>
-		base::return_code color_convert_impl<int(base::image_format::image_format_bgr), int(base::image_format::image_format_yuv)>(Mat& in, Mat& out) {
+		base::return_code color_convert_impl<66304, 66306>(Mat& in, Mat& out) {
 			for (size_t i = 0; i < in.get_height(); ++i) {
 				auto in_data = in.get_data(0, i);
 				auto out_data = out.get_data(0, i);
@@ -472,7 +492,7 @@ namespace module {
 			return base::return_code::success;
 		}
 		template<>
-		base::return_code color_convert_impl<int(base::image_format::image_format_yuv), int(base::image_format::image_format_bgr)>(Mat& in, Mat& out) {
+		base::return_code color_convert_impl<66306, 66304>(Mat& in, Mat& out) {
 			for (size_t i = 0; i < in.get_height(); ++i) {
 				auto in_data = in.get_data(0, i);
 				auto out_data = out.get_data(0, i);
@@ -483,7 +503,9 @@ namespace module {
 		base::return_code color_convert(Mat& in, Mat& out) {
 			// assert size
 			// to do ...
-			return color_convert_impl<8, 8>(in, out);
+			(in.get_format_code() == 66304) | [&](bool) { color_convert_impl<66304, 66306>(in, out); };
+			(in.get_format_code() == 66306) | [&](bool) { color_convert_impl<66306, 66304>(in, out); };
+			return 	base::return_code::success;
 		}
 	}
 }
