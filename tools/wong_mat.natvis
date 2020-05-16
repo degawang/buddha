@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <!-- Author: wong <degawong@126.com> -->
+  
+  <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" MenuName="Add to Image Watch"/>
+  
+  <!-- Mat -->
+
+  <Type Name="module::MatData&lt;*&gt;">
+    <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
+  </Type>
+
+  <Type Name="module::MatData&lt;*&gt;">
+    <Expand>
+      <Synthetic Name="[type]" Condition='strcmp("unsigned char", "$T1") == 0'>
+        <DisplayString>UINT8</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[type]" Condition='strcmp("float", "$T1") == 0'>
+        <DisplayString>FLOAT32</DisplayString>
+      </Synthetic>	  
+      <Synthetic Name="[channels]" Condition="__code_format==66304">
+        <DisplayString>3</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[channels]" Condition="__code_format==66305">
+        <DisplayString>3</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[channels]" Condition="__code_format==66306">
+        <DisplayString>3</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[channels]" Condition="__code_format==65792">
+        <DisplayString>1</DisplayString>
+      </Synthetic>	  	  
+      <Synthetic Name="[channels]" Condition="__code_format==131328">
+        <DisplayString>1</DisplayString>
+      </Synthetic>
+      <Synthetic Name="[channels]" Condition="__code_format==131329">
+        <DisplayString>1</DisplayString>
+      </Synthetic>
+      <Item Name="[width]">__width</Item>
+      <Item Name="[height]">__height</Item>
+      <Item Name="[data]" Condition="__code_format==65792 || __code_format==66304 || __code_format==66305 || __code_format==66306">(void*)__data[0]</Item>
+      <Synthetic Name="[data]" Condition="__code_format==131328 || __code_format==131329">
+        <DisplayString>{(void*)__data[0]}; {(void*)__data[1]}</DisplayString>
+      </Synthetic>
+      <Item Name="[stride]">__pitch[0]</Item>
+    </Expand>
+  </Type>
+  
+</AutoVisualizer>

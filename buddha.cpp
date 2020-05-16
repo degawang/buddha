@@ -90,20 +90,22 @@ int main() {
 	}
 	{
 		// test for mat
-		//using namespace module::colorspace;
-		//Mat a(10, 10, 65792);
-		//a.set_value(0);
-		//auto b = a;
-		//auto c(b.rect(3, 5, 3, 5));
-		//c.set_value(1);
+		using namespace module::colorspace;
+		Mat a(10, 10, 65792);
+		a.set_value(0);
+		auto b = a;
+		auto c(b.rect(3, 5, 3, 5));
+		c.set_value(1);
 
-		//auto d(b.rect(5, 8, 5, 8));
-		//d.set_value(9);
-		//std::cout << d;
-		//std::cout << b;
-		//Mat bgr(10, 10, 66304);
-		//Mat yuv(10, 10, 66306);
-		//auto res = module::colorspace::color_convert(bgr, yuv);
+		auto d(b.rect(5, 8, 5, 8));
+		d.set_value(9);
+		std::cout << d;
+		std::cout << b;
+		Mat bgr(10, 10, 66304);
+		Mat yuv(10, 10, 66306);
+		Mat nv12(10, 10, 131329);
+		module::MatData<float, 128> t(10, 10, 131329);
+		auto res = module::colorspace::color_convert(bgr, yuv);
 	}
 	{
 		// meta
