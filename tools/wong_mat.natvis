@@ -18,7 +18,7 @@
       </Synthetic>
       <Synthetic Name="[type]" Condition='strcmp("float", "$T1") == 0'>
         <DisplayString>FLOAT32</DisplayString>
-      </Synthetic>	  
+      </Synthetic> 
       <Synthetic Name="[channels]" Condition="__code_format==66304">
         <DisplayString>BGR</DisplayString>
       </Synthetic>
@@ -28,13 +28,12 @@
       <Synthetic Name="[channels]" Condition="__code_format==66306">
         <DisplayString>YUV</DisplayString>
       </Synthetic>
- 	  
-      <Synthetic Name="[channels]" Condition="__code_format==131328">
+      <Synthetic Name="[channels]" Condition="__code_format==131328 || __code_format==131329">
         <DisplayString>NV12</DisplayString>
       </Synthetic>
-
       <Item Name="[channels]" Condition="__code_format==65792">1</Item>
-       
+      <Item Name="[planes]" Condition="__code_format==65792 || __code_format==66304 || __code_format==66305 || __code_format==66306">1</Item>
+      <Item Name="[planes]" Condition="__code_format==131328 || __code_format==131329">2</Item>       
       <Item Name="[width]">__width</Item>
       <Item Name="[height]">__height</Item>
       <Item Name="[data]" Condition="__code_format==65792 || __code_format==66304 || __code_format==66305 || __code_format==66306">(void*)__data[0]</Item>

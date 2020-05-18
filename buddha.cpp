@@ -108,6 +108,7 @@ int main() {
 		Mat yuv(10, 10, 66306);
 		yuv.set_value(64);
 		Mat nv12(10, 10, 131328);
+		Mat nv21(10, 10, 131329);
 		module::MatData<float, 128> t(10, 10, 131328);
 		auto res = module::colorspace::color_convert(bgr, yuv);
 	}
