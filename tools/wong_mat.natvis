@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
 
-  <!-- Author: wong -->
+  <!-- Author: wong --> 
+  <!-- reference: https://imagewatch.azurewebsites.net/ImageWatchHelp/ImageWatchHelp.htm -->
   
   <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" MenuName="Add to Image Watch"/>
   
@@ -43,6 +44,8 @@
 		<Item Name="[stride]">__pitch[0]</Item>
     </Expand>
   </Type>
+  
+  <!-- Tensor -->
   
   <Type Name="module::Tensor&lt;*&gt;">
     <UIVisualizer ServiceId="{A452AFEA-3DF6-46BB-9177-C0B08F318025}" Id="1" />
