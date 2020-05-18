@@ -1,7 +1,7 @@
 /*
  * @Author: degawong 
  * @Date: 2020-03-23 16:41:29
- * @LastEditTime: 2020-05-14 14:40:39
+ * @LastEditTime: 2020-05-18 14:02:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: buddha/buddha.cpp
@@ -111,6 +111,12 @@ int main() {
 		Mat nv21(10, 10, 131329);
 		module::MatData<float, 128> t(10, 10, 131328);
 		auto res = module::colorspace::color_convert(bgr, yuv);
+
+		module::Tensor<unsigned char, 64> tensor_0(5, 5, 1);
+		module::Tensor<float, 64> tensor_1(5, 5, 2);
+		module::Tensor<double, 64> tensor_2(5, 5, 3);
+		std::cout << tensor_0;
+		int aaa = 0;
 	}
 	{
 		// meta

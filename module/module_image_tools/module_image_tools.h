@@ -23,7 +23,6 @@
 
 #include "../../base/base.h"
 
-
 // BT.601 YUV to RGB reference
 //  R = (Y - 16) * 1.164              - V * -1.596
 //  G = (Y - 16) * 1.164 - U *  0.391 - V *  0.813
@@ -393,7 +392,7 @@ namespace module {
 		void __allocator() {
 			__get_format_details();
 			for (size_t i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
-				__data[i] = new _data_type[__chunck_size[i]];
+				__data[i] = new _data_type[__chunck_size[i]]{ 0 };
 			}
 		}
 		void __dellocator() {
@@ -442,6 +441,171 @@ namespace module {
 		alignas(_align_size) _data_type* __data[4];
 	private:
 		friend ReferCount<MatData>;
+	};
+
+	template<typename _data_type, int _align_size>
+	class Tensor;
+
+	template<class _derived>
+	class TensorRefer {
+	protected:
+		int* _get_refer() {
+			return __refer_count;
+		}
+		void _shallow_clean() {
+			__release();
+		}
+		void _add_ref_count() {
+			if (__refer_count) {
+				(*__refer_count)++;
+			}
+		}
+		void _dec_ref_count() {
+			if (__refer_count) {
+				if (((*__refer_count)--) == 1) {
+					__uninit();
+				}
+				__release();
+			}
+		}
+		void _init(int* ref_count) {
+			__refer_count = ref_count;
+		}
+	private:
+		_derived& __derived() { 
+			return *static_cast<_derived*>(this); 
+		}
+		const _derived& __derived() const {
+			return *static_cast<const _derived*>(this); 
+		}
+		void __release() {
+			__refer_count = nullptr;
+			__derived().__shallow_clean();
+		}
+		void __uninit() {
+			delete __refer_count;
+			__derived().__dellocator();
+		}
+	private:
+		int* __refer_count;
+	};
+
+	template<typename _data_type = unsigned char, int _align_size = 64>
+	class Tensor : public TensorRefer<Tensor<_data_type, _align_size>> {
+	public:
+		Tensor() {
+			_shallow_clean();
+			_init(new int[1]);
+		}
+		Tensor(int cols, int rows, int channels) : __cols(cols), __rows(rows), __channels(channels), __data(nullptr) {
+			_init(new int[1]);
+			__allocator();
+		}
+		~Tensor() {
+			_dec_ref_count();
+		}
+	public:
+		Tensor(Tensor&& object) {
+			_shallow_clean();
+			_init(object._get_refer());
+			__cols = object.__cols;
+			__rows = object.__rows;
+			__data = object.__data;
+			__channels = object.__channels;
+			object._shallow_clean();
+		}
+		Tensor(const Tensor& object) {
+			_shallow_clean();
+			_init(object._get_refer());
+			_add_ref_count();
+			__cols = object.__cols;
+			__rows = object.__rows;
+			__data = object.__data;
+			__channels = object.__channels;
+		}
+	public:
+		Tensor& operator= (Tensor&& object) {
+			if (this != &object) {
+				_dec_ref_count();
+				_shallow_clean();
+				_init(object._get_refer());
+				_add_ref_count();
+				__cols = object.__cols;
+				__rows = object.__rows;
+				__data = object.__data;
+				__channels = object.__channels;
+				object._shallow_clean();
+			}
+			return *this;
+		}
+		Tensor& operator= (const Tensor& object) {
+			if (this != &object) {
+				_dec_ref_count();
+				_shallow_clean();
+				_init(object._get_refer());
+				_add_ref_count();
+				__cols = object.__cols;
+				__rows = object.__rows;
+				__data = object.__data;
+				__channels = object.__channels;
+			}
+			return *this;
+		}
+	public:
+		int cols() const {
+			return __cols;
+		}
+		int rows() const {
+			return __rows;
+		}
+		int channels() const {
+			return __channels;
+		}
+	public:
+		_data_type* operator[] (int index) {
+			return __data[index];
+		}
+		_data_type* operator[] (int index) const {
+			return __data[index];
+		}
+		_data_type* get_data(int cols, int rows) {
+			return __data + rows * cols * __channels + cols * __channels;
+		}
+		_data_type* get_data(int cols, int rows) const {
+			return __data + rows * cols * __channels + cols * __channels;
+		}
+		template<typename _out_iterator>
+		friend const _out_iterator& operator<< (_out_iterator& os, const Tensor& tensor) {
+			for (int i = 0; i < tensor.rows(); ++i) {
+				for (int j = 0; j < tensor.cols(); ++j) {
+					for (int k = 0; k < tensor.channels(); ++k) {
+						os << std::right << std::setw(3) << int(tensor.get_data(i, j)[k]) << "  ";
+					}
+				}
+				os << std::endl;
+			}
+			return os;
+		}
+	private:
+		void __shallow_clean() {
+			__cols = 0;
+			__rows = 0;
+			__channels = 0;
+			__data = nullptr;
+		}
+		void __allocator() {
+			__data = new _data_type[__cols * __rows * __channels * sizeof(_data_type)]{ 0 };
+		}
+		void __dellocator() {
+			delete[] __data;
+		}
+	private:
+		int __cols;
+		int __rows;
+		int __channels;
+		alignas(_align_size) _data_type* __data;
+	private:
+		friend TensorRefer<Tensor>;
 	};
 
 	namespace colorspace {
