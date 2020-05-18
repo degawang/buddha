@@ -102,9 +102,13 @@ int main() {
 		std::cout << d;
 		std::cout << b;
 		Mat bgr(10, 10, 66304);
+		bgr.set_value(64);
+		Mat rgb(10, 10, 66305);
+		rgb.set_value(64);
 		Mat yuv(10, 10, 66306);
-		Mat nv12(10, 10, 131329);
-		module::MatData<float, 128> t(10, 10, 131329);
+		yuv.set_value(64);
+		Mat nv12(10, 10, 131328);
+		module::MatData<float, 128> t(10, 10, 131328);
 		auto res = module::colorspace::color_convert(bgr, yuv);
 	}
 	{
