@@ -495,10 +495,10 @@ namespace module {
 	public:
 		Tensor() {
 			_shallow_clean();
-			_init(new int[1]);
+			_init(new int(1));
 		}
 		Tensor(int cols, int rows, int channels) : __cols(cols), __rows(rows), __channels(channels), __data(nullptr) {
-			_init(new int[1]);
+			_init(new int(1));
 			__allocator();
 		}
 		~Tensor() {
@@ -569,10 +569,10 @@ namespace module {
 			return __data[index];
 		}
 		_data_type* get_data(int cols, int rows) {
-			return __data + rows * cols * __channels + cols * __channels;
+			return __data + rows * __cols * __channels + cols * __channels;
 		}
 		_data_type* get_data(int cols, int rows) const {
-			return __data + rows * cols * __channels + cols * __channels;
+			return __data + rows * __cols * __channels + cols * __channels;
 		}
 		template<typename _out_iterator>
 		friend const _out_iterator& operator<< (_out_iterator& os, const Tensor& tensor) {

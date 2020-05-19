@@ -70,8 +70,6 @@
       <Item Name="[data]">__data</Item>
       <Item Name="[stride]">__cols*__channels*sizeof($T1)</Item>
     </Expand>
-
-  </Type>
-  
+  </Type>  
   
 </AutoVisualizer>
