@@ -99,10 +99,9 @@ int main() {
 
 		auto d(b.rect(5, 8, 5, 8));
 		d.set_value(9);
-		std::cout << d;
-		std::cout << b;
 		Mat bgr(10, 10, 66304);
 		bgr.set_value(64);
+		bgr = Mat(300, 300, 63306);
 		Mat rgb(10, 10, 66305);
 		rgb.set_value(64);
 		Mat yuv(10, 10, 66306);
@@ -115,8 +114,7 @@ int main() {
 		module::Tensor<unsigned char, 64> tensor_0(5, 5, 1);
 		module::Tensor<float, 64> tensor_1(5, 5, 2);
 		module::Tensor<double, 64> tensor_2(5, 5, 3);
-		std::cout << tensor_0;
-		int aaa = 0;
+		tensor_0 = module::Tensor(2, 2, 2);
 	}
 	{
 		// meta

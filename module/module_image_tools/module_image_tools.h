@@ -529,7 +529,7 @@ namespace module {
 				_dec_ref_count();
 				_shallow_clean();
 				_init(object._get_refer());
-				_add_ref_count();
+				//_add_ref_count();
 				__cols = object.__cols;
 				__rows = object.__rows;
 				__data = object.__data;
