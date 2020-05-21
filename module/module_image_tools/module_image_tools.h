@@ -16,6 +16,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <cstdlib>
 #include <numeric>
 #include <iostream>
 #include <functional>
@@ -166,6 +167,7 @@ namespace module {
 			__height = object.__height;
 			__shareable = object.__shareable;
 			__code_format = object.__code_format;
+#pragma unroll
 			for (size_t i = 0; i < 4; ++i) {
 				__data[i] = object.__data[i];
 				__pitch[i] = object.__pitch[i];
@@ -179,6 +181,7 @@ namespace module {
 			__height = object.__height;
 			__shareable = object.__shareable;
 			__code_format = object.__code_format;
+#pragma unroll
 			for (size_t i = 0; i < 4; ++i) {
 				__data[i] = object.__data[i];
 				__pitch[i] = object.__pitch[i];
@@ -208,6 +211,7 @@ namespace module {
 				__height = object.__height;
 				__shareable = object.__shareable;
 				__code_format = object.__code_format;
+#pragma unroll
 				for (size_t i = 0; i < 4; ++i) {
 					__data[i] = object.__data[i];
 					__pitch[i] = object.__pitch[i];
@@ -227,6 +231,7 @@ namespace module {
 				__height = object.__height;
 				__shareable = object.__shareable;
 				__code_format = object.__code_format;
+#pragma unroll
 				for (size_t i = 0; i < 4; ++i) {
 					__data[i] = object.__data[i];
 					__pitch[i] = object.__pitch[i];
@@ -276,6 +281,7 @@ namespace module {
 		friend const _out_iterator& operator<< (_out_iterator& os, const MatData& mat) {
 			for (int i = 0; i < mat.get_height(); ++i) {
 				for (int j = 0; j < mat.get_width(); ++j) {
+#pragma unroll
 					for (int k = 0; k < mat.get_elements(); ++k) {
 						os << std::right << std::setw(3) << int(mat[0][i * mat.get_pitch() + j * mat.get_elements() + k]) << "  ";
 					}
@@ -308,8 +314,8 @@ namespace module {
 			// it is correct only the data type is single type
 			// if the data type is int, then the initial value
 			// is 0x(value)(value)(value)(value)
-			// data is or not continues
-			if (__shareable) {
+			// data is or not continues in the rows's point of view
+			if (__pitch[0] == __cacu_pitch(__width, 8 * __parse_format_code<base::image_info::element_number>())) {
 				std::memset(__data[0], value, __chunck_size[0]);
 			}
 			else {
@@ -363,7 +369,7 @@ namespace module {
 		//}
 	private:
 		void __copy_data(const MatData& object) {
-			if (__shareable) {
+			if (__pitch[0] == __cacu_pitch(__width, 8 * __parse_format_code<base::image_info::element_number>())) {
 				// continues
 				for (size_t i = 0; i < __parse_format_code<base::image_info::plane_number>(); ++i) {
 					std::copy_n(object.__data[i], __chunck_size[i], __data[i]);
@@ -405,10 +411,6 @@ namespace module {
 		int __parse_format_code() const {
 			return (__code_format >> (8 * (int(_query) - 1))) & 0x00ff;
 		}
-		//template<int _query>
-		//int __parse_format_code() {
-		//	return (__code_format >> (8 * (_query - 1))) & 0x00ff;
-		//}
 		int __cacu_pitch(int width, int bit_count) {
 			return (((int)(width) * (bit_count)+31) / 32 * 4);
 		}
@@ -485,6 +487,7 @@ namespace module {
 		void __uninit() {
 			delete __refer_count;
 			__derived().__dellocator();
+			//__derived().__align_dellocator();
 		}
 	private:
 		int* __refer_count;
@@ -500,6 +503,7 @@ namespace module {
 		Tensor(int cols, int rows, int channels) : __cols(cols), __rows(rows), __channels(channels), __data(nullptr) {
 			_init(new int(1));
 			__allocator();
+			//__align_allocator();
 		}
 		~Tensor() {
 			_dec_ref_count();
@@ -529,7 +533,6 @@ namespace module {
 				_dec_ref_count();
 				_shallow_clean();
 				_init(object._get_refer());
-				//_add_ref_count();
 				__cols = object.__cols;
 				__rows = object.__rows;
 				__data = object.__data;
@@ -578,6 +581,7 @@ namespace module {
 		friend const _out_iterator& operator<< (_out_iterator& os, const Tensor& tensor) {
 			for (int i = 0; i < tensor.rows(); ++i) {
 				for (int j = 0; j < tensor.cols(); ++j) {
+#pragma unroll
 					for (int k = 0; k < tensor.channels(); ++k) {
 						os << std::right << std::setw(3) << int(tensor.get_data(i, j)[k]) << "  ";
 					}
@@ -598,6 +602,24 @@ namespace module {
 		}
 		void __dellocator() {
 			delete[] __data;
+		}
+		//实际在计算机系统中，数据在内存中都是以补码的形式进行存储的
+		//当n等于16时，其-n即为-16， -16的原码为1000...0010000, 其反码为1111...1101111,
+		//补码为1111...1110000，相当于取的是地址的高位，低位直接截断进行对齐
+		template<typename data_type>
+		data_type* __align_pointer(data_type* ptr, int align_size = _align_size) {
+			return (data_type*)(((size_t)ptr + align_size - 1) & -align_size);
+		}
+		void __align_allocator() {
+			// sizeof(void*) is the u_ptr address size
+			_data_type* u_ptr = (_data_type*)std::malloc(__cols * __rows * __channels * sizeof(_data_type) + sizeof(void*) + _align_size);
+			_data_type** a_ptr = __align_pointer<_data_type*>((_data_type**)u_ptr + 1, _align_size);
+			a_ptr[-1] = u_ptr;
+			__data = (_data_type*)a_ptr;
+		}
+		void __align_dellocator() {
+			auto u_ptr = ((_data_type**)__data)[-1];
+			std::free(u_ptr);
 		}
 	private:
 		int __cols;

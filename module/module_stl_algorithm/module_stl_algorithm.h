@@ -50,7 +50,7 @@ namespace module {
 	namespace stl {
 		void test_clamp() {
 			for (int i : {1, 3, 5, 7, 9}) {
-				std::cout << std::clamp(i, 11, 9, [](int l, int r) {
+				std::cout << std::clamp(i, 1, 9, [](int l, int r) {
 					return l < r;
 				}) << std::endl;
 			}

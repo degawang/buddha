@@ -1,7 +1,7 @@
 /*
  * @Author: degawong 
  * @Date: 2020-03-23 16:41:29
- * @LastEditTime: 2020-05-18 14:02:23
+ * @LastEditTime: 2020-05-20 08:29:23
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: buddha/buddha.cpp
@@ -72,16 +72,16 @@ void printline(intger_number<_args...>) {
 int main() {
 	{
 		//functor
-		using namespace base;
-		auto o = [=](bool a) {
-			std::cout << "functor " << std::endl;
-			return int(7);
-		};
-		auto add_one = [](auto a) {
-			std::cout << a << std::endl;
-			return 1 + a; 
-		};
-		0 | o | add_one;
+		//using namespace base;
+		//auto o = [=](bool a) {
+		//	std::cout << "functor " << std::endl;
+		//	return int(7);
+		//};
+		//auto add_one = [](auto a) {
+		//	std::cout << a << std::endl;
+		//	return 1 + a; 
+		//};
+		//0 | o | add_one;
 	}
 	{
 		// test for log info
@@ -91,25 +91,25 @@ int main() {
 	{
 		// test for mat
 		using namespace module::colorspace;
-		Mat a(10, 10, 65792);
-		a.set_value(0);
-		auto b = a;
-		auto c(b.rect(3, 5, 3, 5));
-		c.set_value(1);
-
-		auto d(b.rect(5, 8, 5, 8));
-		d.set_value(9);
-		Mat bgr(10, 10, 66304);
-		bgr.set_value(64);
-		bgr = Mat(300, 300, 63306);
-		Mat rgb(10, 10, 66305);
-		rgb.set_value(64);
-		Mat yuv(10, 10, 66306);
-		yuv.set_value(64);
-		Mat nv12(10, 10, 131328);
-		Mat nv21(10, 10, 131329);
-		module::MatData<float, 128> t(10, 10, 131328);
-		auto res = module::colorspace::color_convert(bgr, yuv);
+		//Mat a(10, 10, base::format_code<1,3,0>::value);
+		//a.set_value(0);
+		//auto b = a;
+		//auto c(b.rect(3, 5, 3, 5));
+		//c.set_value(1);
+		//auto cc = c.copy();
+		//auto d(b.rect(5, 8, 5, 8));
+		//d.set_value(9);
+		//Mat bgr(10, 10, 66304);
+		//bgr.set_value(64);
+		//bgr = Mat(300, 300, 63306);
+		//Mat rgb(10, 10, 66305);
+		//rgb.set_value(64);
+		//Mat yuv(10, 10, 66306);
+		//yuv.set_value(64);
+		//Mat nv12(10, 10, 131328);
+		//Mat nv21(10, 10, 131329);
+		//module::MatData<float, 128> t(10, 10, 131328);
+		//auto res = module::colorspace::color_convert(bgr, yuv);
 
 		module::Tensor<unsigned char, 64> tensor_0(5, 5, 1);
 		module::Tensor<float, 64> tensor_1(5, 5, 2);
@@ -131,7 +131,7 @@ int main() {
 		//stl algorithm
 		//module::for_each::test_for_each();
 		//module::stl::test_clamp();
-        //module::stl::test_sample();
+		//module::stl::test_sample();
 		//module::stl::test_at_exit_function();
 	} 
 	{
