@@ -13,12 +13,19 @@ namespace base {
 		console,
 		std_file,
 	};
+
 	enum class return_code {
 		success,
 		unsupport,
 		out_of_memory,
 		path_not_exsit,
 		file_open_error,
+	};
+
+	enum class interp_method {
+		linear = 0,
+		bilinear = 1,
+		bicubic = 2,
 	};
 
 	//template<typename _type_1, typename _type_2>
@@ -49,6 +56,7 @@ namespace base {
 		image_format_nv12 = format_code<2, 1, 0>::value,
 		image_format_nv21 = format_code<2, 1, 1>::value,
 	};
+
 	enum class algorithm_code {
 		base_algorithm,
 		derived_algorithm,
@@ -64,7 +72,7 @@ namespace base {
 
 	// add map && reduce
 	template <typename _function, typename... _args>
-	auto invoke_multi_time(_function function, _args... args) {
+	auto invoke_multi_time(_function function, _args&&... args) {
 		std::initializer_list<int>{ ((function(std::forward<_args>(args))), 0)...};
 	}
 
@@ -126,7 +134,12 @@ namespace base {
 	auto every_larger = [](auto&& input, auto&&... args) -> bool {
 		return ((args < input) && ...);
 	};
-
+	auto any_not_equel = [](auto&& input, auto&&... args) -> bool {
+		return ((args != input) || ...);
+	};
+	auto every_not_eque = [](auto&& input, auto&&... args) -> bool {
+		return ((args != input) && ...);
+	};
 	//template<typename _args, typename _func>
 	//auto operator| (_args&& args, const _func& func) {
 	//	if (true == args) {

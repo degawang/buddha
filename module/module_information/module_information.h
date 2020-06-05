@@ -303,6 +303,7 @@ namespace module {
 
 namespace std {
 	// specialized the function endl for Dummy in namespace std
+	// also u can make the template of the class dummy to be a dumb implementation
 	module::Dummy& endl(module::Dummy& stream_object) {
 		return stream_object;
 	}

@@ -3,7 +3,7 @@ project(buddha)
 
 cmake_minimum_required(VERSION 3.0)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(module)
 add_subdirectory(pattern)
@@ -17,6 +17,7 @@ set_property(TARGET module_information PROPERTY FOLDER "module")
 set_property(TARGET module_image_tools PROPERTY FOLDER "module")
 set_property(TARGET module_memory_pool PROPERTY FOLDER "module")
 set_property(TARGET module_thread_pool PROPERTY FOLDER "module")
+set_property(TARGET module_coding_tools PROPERTY FOLDER "module")
 set_property(TARGET module_meta_program PROPERTY FOLDER "module")
 set_property(TARGET module_stl_algorithm PROPERTY FOLDER "module")
 set_property(TARGET pattern_singleton_pattern PROPERTY FOLDER "pattern")
@@ -56,6 +57,7 @@ target_link_libraries(${PROJECT_NAME}
 					  module_memory_pool
 					  module_path_walker
 					  module_thread_pool
+					  module_coding_tools
 					  module_meta_program
 					  module_stl_algorithm
 					  pattern_singleton_pattern)

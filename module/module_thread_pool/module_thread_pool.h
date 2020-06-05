@@ -50,8 +50,11 @@ namespace module{
         }
 	public:
         template <typename _function, typename... _args>
-		auto commit_task(_function&& function, _args&&... args) -> std::future<typename std::result_of<_function(_args...)>::type> {
-			typedef typename std::result_of<_function(_args...)>::type return_type;
+		// std::result_of is deprecated in c++17 and removed in c++20
+		//auto commit_task(_function&& function, _args&&... args) -> std::future<typename std::result_of<_function(_args...)>::type> {
+		auto commit_task(_function&& function, _args&&... args) -> std::future<typename std::invoke_result<_function(_args...)>::type> {
+			//typedef typename std::result_of<_function(_args...)>::type return_type;
+			typedef typename std::invoke_result<_function(_args...)>::type return_type;
 			auto t = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<_function>(function), std::forward<_args>(args)...));
 			auto ret = t->get_future();
 			{

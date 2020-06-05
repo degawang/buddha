@@ -1,13 +1,15 @@
 /*
  * @Author: degawong 
  * @Date: 2020-03-23 16:41:29
- * @LastEditTime: 2020-05-20 08:29:23
+ * @LastEditTime: 2020-05-25 10:36:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: buddha/buddha.cpp
  */
 
 #include <atomic>
+//#include <format>
+#include <string>
 #include <thread>
 #include <vector>
 #include <fstream>
@@ -28,7 +30,7 @@
 #include "module_stl_algorithm.h"
 
 // test for memory leak
-#include "vld.h"
+//#include "vld.h"
 
 template<int... _args>
 struct intger_number {};
@@ -69,7 +71,56 @@ void printline(intger_number<_args...>) {
 //	return f(std::forward<T>(param));
 //}
 
+class test {
+public:
+	operator int() const {
+		std::cout << "anther kind of writting style" << std::endl;
+		return 0;
+	}
+};
+
+//template<int _value>
+//class to_binary {
+//	static unsigned const value = to_binary<_value / 10>::value * 2;
+//};
+//
+//template<>
+//class to_binary<0> {
+//	static unsigned const value = 0;
+//};
+
+template<int _value>
+struct to_decimal {
+	static unsigned const value = to_decimal<_value / 10>::value * 2 + _value % 10;
+};
+
+template<>
+struct to_decimal<0> {
+	static unsigned const value = 0;
+};
+
+//template<typename T>
+//concept bool Stringable = requires(T a) {
+//	{a.to_string()} -> std::string;
+//};
+
+
+
 int main() {
+	{
+		using namespace module::base_meta;
+		//std::cout << sum_pow<2, 2>::ret << std::endl;;
+		//copy(l.rbegin(), l.rend(), ostream_iterator<int>{cout, ", "});
+		auto f = format_string("o_%s_%d_o", "some", 88);
+		std::cout << f.data() << std::endl;
+	}
+	{
+		//using namespace module::test_concept;
+		//print_string(&str1);
+		//auto a = to_decimal<10>::value;
+		//auto ret = test()();
+		//std::cout << std::format("Hello {}!\n", "world");
+	}
 	{
 		//functor
 		//using namespace base;
@@ -111,10 +162,10 @@ int main() {
 		//module::MatData<float, 128> t(10, 10, 131328);
 		//auto res = module::colorspace::color_convert(bgr, yuv);
 
-		module::Tensor<unsigned char, 64> tensor_0(5, 5, 1);
-		module::Tensor<float, 64> tensor_1(5, 5, 2);
-		module::Tensor<double, 64> tensor_2(5, 5, 3);
-		tensor_0 = module::Tensor(2, 2, 2);
+		//module::Tensor<unsigned char, 64> tensor_0(5, 5, 1);
+		//module::Tensor<float, 64> tensor_1(5, 5, 2);
+		//module::Tensor<double, 64> tensor_2(5, 5, 3);
+		//tensor_0 = module::Tensor(2, 2, 2);
 	}
 	{
 		// meta
@@ -133,7 +184,11 @@ int main() {
 		//module::stl::test_clamp();
 		//module::stl::test_sample();
 		//module::stl::test_at_exit_function();
-	} 
+		//std::vector<int> vi; __cplusplus;
+		//std::vector<int>::iterator a;
+		//std::cout << (&vi) << std::endl;
+		//std::cout << std::addressof(vi) << std::endl;
+	}
 	{
 		//log info 
 		//auto res = module::Information<INFO_TYPE>(__FUNCTION__, "_1st ", 1, " _2nd ", "2");

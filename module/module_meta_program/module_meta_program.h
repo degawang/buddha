@@ -15,6 +15,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <numbers>
 #include <numeric>
 #include <iostream>
 #include <functional>
@@ -103,6 +104,106 @@ namespace module {
 					typename sort<typename devide<int_list<>, int_list<_1st...>>::first_type>::type,
 					typename sort<typename devide<int_list<>, int_list<_1st...>>::second_type>::type>
 		{};
+	}
+
+	namespace base_meta {
+		// 通例为空，若不匹配特例将报错，很好的调试手段（这里是 bool 就无所谓了）
+		template<bool c, typename Then, typename Else> class IF_ { };
+		template<typename Then, typename Else>
+		class IF_<true, Then, Else> { public: typedef Then reType; };
+		template<typename Then, typename Else>
+		class IF_<false, Then, Else> { public: typedef Else reType; };
+
+		template<bool _condition, typename _then, typename _else>
+		struct _if_ {};
+		template<typename _then, typename _else>
+		struct _if_<true, _then, _else> {
+			typedef _then return_type;
+			//enum { return_type = _then };
+		};
+		template<typename _then, typename _else>
+		struct _if_<false, _then, _else> {
+			typedef _else return_type;
+			//enum { return_type = _else };
+		};
+
+		template<
+			template<typename>
+			class _condition, typename _statement
+		>
+		struct _while_ {
+			template<typename _statement>
+			struct _stop_ {
+				typedef _statement return_type;
+				//enum { return_type = _statement };
+			};
+			typedef typename
+				_if_<_condition<_statement>::ret,
+				_while_<_condition, typename _statement::_next_>,
+				_stop_<_statement >> ::return_type::return_type
+				return_type;
+		};
+
+		// 计算 1^e + 2^e + ... + n^e
+		template<int n, int e>
+		struct sum_pow {
+			template<int i, int e>
+			struct pow_e {
+				enum { return_type = i * pow_e<i, e - 1>::return_type };
+			};
+			template<int i>
+			struct pow_e<i, 0> {
+				enum { return_type = 1 };
+			};
+			template<int i>
+			struct pow {
+				enum { return_type = pow_e<i, e>::return_type };
+			};
+			template<typename _statment>
+			struct condition {
+				enum { ret = (_statment::value <= n) };
+			};
+			template<int i, int sum>
+			struct statment {
+				enum { ret = sum };
+				enum { value = i };
+				typedef statment<i + 1, sum + pow<i>::return_type> _next_;
+			};
+			enum { ret = _while_<condition, statment<1, 0>>::return_type::ret };
+		};
+		//template<int n, int e>
+		//class sum_pow {
+		//template<int i, int e> class pow_e { public: enum { ret = i * pow_e<i, e - 1>::ret }; };
+		//template<int i> class pow_e<i, 0> { public: enum { ret = 1 }; };
+		//										  // 计算 i^e，嵌套类使得能够定义嵌套模板元函数，private 访问控制隐藏实现细节
+		//template<int i> class pow { public: enum { ret = pow_e<i, e>::ret }; };
+		//								  template<typename stat>
+		//class cond { public: enum { ret = (stat::ri <= n) }; };
+		//				   template<int i, int sum>
+		//				   class stat {
+		//				   public: typedef stat<i + 1, sum + pow<i>::ret> Next;
+		//						 enum { ri = i, ret = sum };
+		//				   };
+		//public:
+		//	enum { ret = WHILE_<cond, stat<1, 0>>::reType::ret };
+		//};
+
+		// 隐含要求： Condition 返回值 ret，Statement 有类型 Next
+		template<template<typename> class Condition, typename Statement>
+		class WHILE_ {
+		template<typename Statement> class STOP { public: typedef Statement reType; };
+		public:
+		    typedef typename
+		   	 IF_<Condition<Statement>::ret,
+		   	 WHILE_<Condition, typename Statement::Next>,
+		   	 STOP<Statement>>::reType::reType
+		   	 reType;
+		};
+
+		template<double& radian>
+		struct to_angle {
+			enum{value = radian * (180.0 / std::numbers::pi) };
+		};
 	}
 }
 

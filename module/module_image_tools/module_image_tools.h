@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-30 10:39:53
- * @LastEditTime: 2020-05-16 18:30:25
+ * @LastEditTime: 2020-06-05 13:31:35
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \buddha\module\module_image_tools\module_image_tools.h
@@ -11,6 +11,7 @@
 #include <deque>
 #include <queue>
 #include <mutex>
+//#include <format>
 #include <chrono>
 #include <future>
 #include <vector>
@@ -603,9 +604,9 @@ namespace module {
 		void __dellocator() {
 			delete[] __data;
 		}
-		//Êµ¼ÊÔÚ¼ÆËã»úÏµÍ³ÖÐ£¬Êý¾ÝÔÚÄÚ´æÖÐ¶¼ÊÇÒÔ²¹ÂëµÄÐÎÊ½½øÐÐ´æ´¢µÄ
-		//µ±nµÈÓÚ16Ê±£¬Æä-n¼´Îª-16£¬ -16µÄÔ­ÂëÎª1000...0010000, Æä·´ÂëÎª1111...1101111,
-		//²¹ÂëÎª1111...1110000£¬Ïàµ±ÓÚÈ¡µÄÊÇµØÖ·µÄ¸ßÎ»£¬µÍÎ»Ö±½Ó½Ø¶Ï½øÐÐ¶ÔÆë
+		//Êµï¿½ï¿½ï¿½Ú¼ï¿½ï¿½ï¿½ï¿½ÏµÍ³ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½Ð´æ´¢ï¿½ï¿½
+		//ï¿½ï¿½nï¿½ï¿½ï¿½ï¿½16Ê±ï¿½ï¿½ï¿½ï¿½-nï¿½ï¿½Îª-16ï¿½ï¿½ -16ï¿½ï¿½Ô­ï¿½ï¿½Îª1000...0010000, ï¿½ä·´ï¿½ï¿½Îª1111...1101111,
+		//ï¿½ï¿½ï¿½ï¿½Îª1111...1110000ï¿½ï¿½ï¿½àµ±ï¿½ï¿½È¡ï¿½ï¿½ï¿½Çµï¿½Ö·ï¿½Ä¸ï¿½Î»ï¿½ï¿½ï¿½ï¿½Î»Ö±ï¿½Ó½Ø¶Ï½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
 		template<typename data_type>
 		data_type* __align_pointer(data_type* ptr, int align_size = _align_size) {
 			return (data_type*)(((size_t)ptr + align_size - 1) & -align_size);
@@ -665,12 +666,7 @@ namespace module {
 				YUV2BGR(*in++, *in++, *in++, *out++, *out++, *out++);
 			}
 		}
-		template<int _in_code_format, int _out_code_format>
-		base::return_code color_convert_impl(Mat& in, Mat& out) {
-			return base::return_code::unsupport;
-		}
-		template<>
-		base::return_code color_convert_impl<66304, 66306>(Mat& in, Mat& out) {
+		base::return_code color_convert_impl_bgr_2_yuv(Mat& in, Mat& out) {
 			for (size_t i = 0; i < in.get_height(); ++i) {
 				auto in_data = in.get_data(0, i);
 				auto out_data = out.get_data(0, i);
@@ -678,8 +674,7 @@ namespace module {
 			}
 			return base::return_code::success;
 		}
-		template<>
-		base::return_code color_convert_impl<66306, 66304>(Mat& in, Mat& out) {
+		base::return_code color_convert_impl_yuv_2_bgr(Mat& in, Mat& out) {
 			for (size_t i = 0; i < in.get_height(); ++i) {
 				auto in_data = in.get_data(0, i);
 				auto out_data = out.get_data(0, i);
@@ -688,11 +683,39 @@ namespace module {
 			return base::return_code::success;
 		}
 		base::return_code color_convert(Mat& in, Mat& out) {
-			// assert size
-			// to do ...
-			(in.get_format_code() == 66304) | [&](bool) { color_convert_impl<66304, 66306>(in, out); };
-			(in.get_format_code() == 66306) | [&](bool) { color_convert_impl<66306, 66304>(in, out); };
-			return 	base::return_code::success;
+			base::return_code res = base::return_code::unsupport;
+			if ((in.get_width() != out.get_width()) || (in.get_height() != out.get_height())) {
+				return base::return_code::unsupport;
+			}
+			in.get_format_code() == 66304 | [&](bool) { res = color_convert_impl_bgr_2_yuv(in, out); };
+			in.get_format_code() == 66306 | [&](bool) { res = color_convert_impl_yuv_2_bgr(in, out); };
+			return res;
 		}
+		base::return_code image_resize_gray(Mat& in, Mat& out, base::interp_method inte_method) {
+			base::return_code res = base::return_code::success;
+
+			return res;
+		}
+		base::return_code image_resize_nv12_nv21(Mat& in, Mat& out, base::interp_method inte_method) {
+			base::return_code res = base::return_code::success;
+
+			return res;
+		}
+		base::return_code image_resize_bgr_rgb_yuv(Mat& in, Mat& out, base::interp_method inte_method) {
+			base::return_code res = base::return_code::success;
+
+			return res;
+		}
+		base::return_code image_resize(Mat& in, Mat& out, base::interp_method inter_method = base::interp_method::bilinear) {
+			base::return_code res = base::return_code::unsupport;
+			if (in.get_format_code() != out.get_format_code()) {
+				return base::return_code::unsupport;
+			}
+			in.get_format_code() == 65792 | [&](bool) { res = image_resize_gray(in, out, inter_method); };
+			base::any_equel(in.get_format_code(), 131328, 131329) | [&](bool) { res = image_resize_nv12_nv21(in, out, inter_method); };
+			base::any_equel(in.get_format_code(), 63304, 63305, 63306) | [&](bool) { res = image_resize_bgr_rgb_yuv(in, out, inter_method); };
+			return res;
+		}
+
 	}
 }
