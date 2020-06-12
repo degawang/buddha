@@ -26,6 +26,7 @@
 #include "module_path_walker.h"
 #include "module_memory_pool.h"
 #include "module_thread_pool.h"
+#include "module_coding_tools.h"
 #include "module_meta_program.h"
 #include "module_stl_algorithm.h"
 
@@ -111,7 +112,7 @@ int main() {
 		using namespace module::base_meta;
 		//std::cout << sum_pow<2, 2>::ret << std::endl;;
 		//copy(l.rbegin(), l.rend(), ostream_iterator<int>{cout, ", "});
-		auto f = format_string("o_%s_%d_o", "some", 88);
+		auto f = module::format_string("o_%s_%d_o", "some", 88);
 		std::cout << f.data() << std::endl;
 	}
 	{

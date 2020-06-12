@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(module)
 add_subdirectory(pattern)
+add_subdirectory(request)
 add_subdirectory(algorithm)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

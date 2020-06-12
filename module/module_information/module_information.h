@@ -92,32 +92,32 @@ namespace module {
 	//		return InforWrap::get_instance(RECORD_NAME)->get_stream();
 	//	}
 	//};
-	template<int info_level>
-	class InfoLevel : public pattern::SingletonPattern<InfoLevel<info_level>> {};
-	template<>
-	class InfoLevel<0> : public pattern::SingletonPattern<InfoLevel<0>> {
-		friend pattern::SingletonPattern<InfoLevel<0>>;
-	public:
-		base::info_type get_info_type() {
-			return base::info_type::dummy;
-		}
-	};
-	template<>
-	class InfoLevel<1> : public pattern::SingletonPattern<InfoLevel<1>> {
-		friend pattern::SingletonPattern<InfoLevel<1>>;
-	public:
-		base::info_type get_info_type() {
-			return base::info_type::console;
-		}
-	};
-	template<>
-	class InfoLevel<2> : public pattern::SingletonPattern<InfoLevel<2>> {
-		friend pattern::SingletonPattern<InfoLevel<2>>;
-	public:
-		base::info_type get_info_type() {
-			return base::info_type::std_file;
-		}
-	};
+	//template<int info_level>
+	//class InfoLevel : public pattern::SingletonPattern<InfoLevel<info_level>> {};
+	//template<>
+	//class InfoLevel<0> : public pattern::SingletonPattern<InfoLevel<0>> {
+	//	friend pattern::SingletonPattern<InfoLevel<0>>;
+	//public:
+	//	base::info_type get_info_type() {
+	//		return base::info_type::dummy;
+	//	}
+	//};
+	//template<>
+	//class InfoLevel<1> : public pattern::SingletonPattern<InfoLevel<1>> {
+	//	friend pattern::SingletonPattern<InfoLevel<1>>;
+	//public:
+	//	base::info_type get_info_type() {
+	//		return base::info_type::console;
+	//	}
+	//};
+	//template<>
+	//class InfoLevel<2> : public pattern::SingletonPattern<InfoLevel<2>> {
+	//	friend pattern::SingletonPattern<InfoLevel<2>>;
+	//public:
+	//	base::info_type get_info_type() {
+	//		return base::info_type::std_file;
+	//	}
+	//};
 	template<typename _stream_type>
 	class InforAdaptor : public pattern::SingletonPattern<InforAdaptor<_stream_type>> {
 	public:
