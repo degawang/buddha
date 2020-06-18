@@ -1,18 +1,32 @@
 
 project(module_thread_pool)
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(
+	VERSION
+	3.0
+)
 
-set(CMAKE_CXX_STANDARD 20)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+set(
+	CMAKE_CXX_STANDARD
+	20
+)
 
-aux_source_directory(. SRCFILE)
+# include_directories(
+	# ${CMAKE_CURRENT_SOURCE_DIR}
+# )
 
-file(GLOB_RECURSE HEADFILE ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+file(
+	GLOB_RECURSE SRCS
+	${CMAKE_CURRENT_SOURCE_DIR}/*
+)
 
-add_library(${PROJECT_NAME} ${SRCFILE} ${HEADFILE})
+target_include_directories(
+	${PROJECT_NAME}
+	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
-target_link_libraries(${PROJECT_NAME}
-					  pattern_singleton_pattern)
+target_link_libraries(
+	${PROJECT_NAME}
+	pattern_singleton_pattern
+)

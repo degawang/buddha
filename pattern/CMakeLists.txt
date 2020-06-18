@@ -1,2 +1,4 @@
 
-add_subdirectory(pattern_singleton_pattern)
+add_subdirectory(
+	pattern_singleton_pattern
+)

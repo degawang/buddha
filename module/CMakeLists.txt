@@ -1,11 +1,13 @@
 
-add_subdirectory(module_reflection)
-add_subdirectory(module_time_clock)
-add_subdirectory(module_information)
-add_subdirectory(module_path_walker)
-add_subdirectory(module_memory_pool)
-add_subdirectory(module_thread_pool)
-add_subdirectory(module_image_tools)
-add_subdirectory(module_coding_tools)
-add_subdirectory(module_meta_program)
-add_subdirectory(module_stl_algorithm)
+add_subdirectory(
+	module_reflection
+	module_time_clock
+	module_information
+	module_path_walker
+	module_memory_pool
+	module_thread_pool
+	module_image_tools
+	module_coding_tools
+	module_meta_program
+	module_stl_algorithm
+)

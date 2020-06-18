@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(module)
 add_subdirectory(pattern)
 add_subdirectory(request)
-add_subdirectory(algorithm)
+# add_subdirectory(algorithm)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(TARGET module_reflection PROPERTY FOLDER "module")
@@ -26,50 +26,70 @@ set_property(TARGET pattern_singleton_pattern PROPERTY FOLDER "pattern")
 set_property(TARGET algorithm_base PROPERTY FOLDER "algorithm")
 set_property(TARGET algorithm_derived PROPERTY FOLDER "algorithm")
 
-set(CMAKE_CXX_FLAGS
-	"${CMAKE_CXX_FLAGS} -g -std=c++latest")
+set(
+	CMAKE_CXX_FLAGS
+	"${CMAKE_CXX_FLAGS} -g -std=c++latest"
+)
 
-file(GLOB_RECURSE
-	 MARKDOWN_NOTE
-	 note/*.md)
+file(
+	GLOB_RECURSE
+	MARKDOWN_NOTE
+	note/*.md
+)
 
-source_group("note"
-			 FILES
-			 ${MARKDOWN_NOTE})
+source_group(
+	"note"
+	FILES
+	${MARKDOWN_NOTE}
+)
 
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}
-					 SRCFILE)
+aux_source_directory(
+	${CMAKE_CURRENT_SOURCE_DIR}
+	SRCFILE
+)
 
-add_executable(${PROJECT_NAME}
-			   ${SRCFILE}
-			   ${MARKDOWN_NOTE})
+add_executable(
+	${PROJECT_NAME}
+	${SRCFILE}
+	${MARKDOWN_NOTE}
+)
 
-target_compile_options(${PROJECT_NAME}
-					   PUBLIC
-					   -g)
+# target_compile_options(
+	# ${PROJECT_NAME}
+	# PUBLIC
+	# -g
+# )
 
-target_link_libraries(${PROJECT_NAME}
-					  algorithm_base
-					  algorithm_derived
-                      module_reflection
-					  module_time_clock
-					  module_information
-					  module_image_tools
-					  module_memory_pool
-					  module_path_walker
-					  module_thread_pool
-					  module_coding_tools
-					  module_meta_program
-					  module_stl_algorithm
-					  pattern_singleton_pattern)
+target_link_libraries(
+	${PROJECT_NAME}
+	algorithm_base
+	algorithm_derived
+    module_reflection
+	module_time_clock
+	module_information
+	module_image_tools
+	module_memory_pool
+	module_path_walker
+	module_thread_pool
+	module_coding_tools
+	module_meta_program
+	module_stl_algorithm
+	pattern_singleton_pattern
+)
 
-target_include_directories(${PROJECT_NAME}
-						   PUBLIC
-						   ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(
+	${PROJECT_NAME}
+	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-set_directory_properties(PROPERTIES VS_STARTUP_PROJECT
-						 ${PROJECT_NAME})
+set_directory_properties(
+	PROPERTIES VS_STARTUP_PROJECT
+	${PROJECT_NAME}
+)
 
-set_target_properties(${PROJECT_NAME}
-					  PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
-					  "${CMAKE_CURRENT_SOURCE_DIR}/workspace/")
+set_target_properties(
+	${PROJECT_NAME}
+	PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
+	"${CMAKE_CURRENT_SOURCE_DIR}/workspace/"
+)
