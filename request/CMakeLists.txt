@@ -1,5 +1,3 @@
 
-add_subdirectory(
-	algorithm_base
-	algorithm_derived
-)
+add_subdirectory(algorithm_base)
+add_subdirectory(algorithm_derived)
